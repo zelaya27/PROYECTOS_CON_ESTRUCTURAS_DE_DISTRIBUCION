@@ -10,7 +10,13 @@
     --text: #ffffff;
     --border: #2c3e50;
 }
-
+/* Ajuste para que el Tipo, la Estructura y la Cantidad quepan en una fila */
+.grid-3-especial {
+    display: grid;
+    grid-template-columns: 1fr 2fr 0.8fr; 
+    gap: 8px;
+    margin-top: 5px;
+}
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: var(--bg);
