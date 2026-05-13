@@ -3,23 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ENEE - Gestión de Materiales</title>
+    <title>ENEE - AZ</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <div id="login-container" class="container-login">
         <div class="login-card">
             <div class="logo-circle">
-                <img src="https://raw.githubusercontent.com/josueortizp87-code/App-Cuadrillas-Distribucion/refs/heads/main/imagenes/UTCD%20Vertical.png" alt="Logo ENEE">
+                <img src="https://raw.githubusercontent.com/josueortizp87-code/App-Cuadrillas-Distribucion/refs/heads/main/imagenes/UTCD%20Vertical.png" alt="Logo">
             </div>
             <h2>INICIAR SESIÓN</h2>
             
             <div class="input-group">
                 <i class="fas fa-user"></i>
-                <input type="text" id="user" placeholder="Usuario (Ej: ALLAN.ZELAYA)">
+                <select id="user" class="select-login">
+                    <option value="">Seleccione su Usuario...</option>
+                </select>
             </div>
             
             <div class="input-group">
@@ -28,13 +29,13 @@
             </div>
             
             <button class="btn-login" onclick="validarLogin()">ENTRAR</button>
-            <p id="login-error" class="error-msg" style="display: none;">❌ Usuario o contraseña incorrectos</p>
+            <p id="login-error" class="error-msg" style="display: none;">❌ Contraseña incorrecta</p>
         </div>
     </div>
 
     <div id="app-container" class="container" style="display: none;">
         <header>
-            <button class="btn-salir" onclick="cerrarSesion()">CERRAR SESIÓN</button>
+            <button class="btn-salir" onclick="cerrarSesion()">SALIR</button>
             <div class="logo-header">
                 <img src="https://raw.githubusercontent.com/josueortizp87-code/App-Cuadrillas-Distribucion/refs/heads/main/imagenes/UTCD%20Vertical.png" alt="ENEE">
             </div>
@@ -60,20 +61,14 @@
             </button>
         </div>
 
-        <label>Estructuras en el proyecto:</label>
         <ul id="lista-estructuras" class="lista-items"></ul>
 
         <div class="resumen-box">
-            <div class="resumen-header">CONSOLIDADO TOTAL DE MATERIALES</div>
+            <div class="resumen-header">CONSOLIDADO TOTAL</div>
             <div class="table-wrapper">
                 <table class="tabla-materiales">
                     <thead>
-                        <tr>
-                            <th>CANT.</th>
-                            <th>UND</th>
-                            <th>CÓDIGO</th>
-                            <th>DESCRIPCIÓN</th>
-                        </tr>
+                        <tr><th>CANT.</th><th>UND</th><th>CÓDIGO</th><th>DESCRIPCIÓN</th></tr>
                     </thead>
                     <tbody id="tabla-body">
                         <tr><td colspan="4">No hay datos agregados</td></tr>
@@ -86,7 +81,6 @@
             <i class="fas fa-file-pdf"></i> GENERAR REPORTE PDF
         </button>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
