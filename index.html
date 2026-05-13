@@ -4,48 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ENEE - Gestión de Materiales</title>
-    <!-- Librerías Externas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- PANTALLA DE LOGIN -->
     <div id="login-container" class="container-login">
         <div class="login-card">
             <div class="logo-circle">
                 <img src="https://raw.githubusercontent.com/josueortizp87-code/App-Cuadrillas-Distribucion/refs/heads/main/imagenes/UTCD%20Vertical.png" alt="Logo">
             </div>
             <h2>INICIAR SESIÓN</h2>
-            
             <div class="input-group">
                 <i class="fas fa-user"></i>
                 <input type="text" id="user_input" placeholder="Usuario">
             </div>
-            
             <div class="input-group">
                 <i class="fas fa-lock"></i>
                 <input type="password" id="pass_input" placeholder="Contraseña">
             </div>
-            
             <button class="btn-login" onclick="validarLogin()">
                 <span id="login-text">ENTRAR</span>
                 <i id="login-spinner" class="fas fa-spinner fa-spin" style="display:none"></i>
             </button>
-            
             <p id="login-error" class="error-msg">Usuario o contraseña incorrectos</p>
         </div>
     </div>
 
-    <!-- PANTALLA PRINCIPAL DE LA APP -->
     <div id="app-container" class="container" style="display: none;">
         <header>
             <button class="btn-salir" onclick="cerrarSesion()">CERRAR SESIÓN</button>
             <div class="logo-header">
                 <img src="https://raw.githubusercontent.com/josueortizp87-code/App-Cuadrillas-Distribucion/refs/heads/main/imagenes/UTCD%20Vertical.png" alt="ENEE">
             </div>
-            <h1 id="titulo-app">CÁLCULO DE MATERIALES</h1>
+            <h1>CÁLCULO DE MATERIALES</h1>
             <div class="user-info-bar">
                 <i class="fas fa-id-badge"></i> <span id="user-display"></span>
             </div>
@@ -72,29 +65,18 @@
 
         <div class="resumen-box">
             <div class="resumen-header">CONSOLIDADO DE MATERIALES</div>
-            <div class="table-wrapper">
-                <table class="tabla-materiales">
-                    <thead>
-                        <tr>
-                            <th>CANT.</th>
-                            <th>UND</th>
-                            <th>CÓDIGO</th>
-                            <th>DESCRIPCIÓN</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-body">
-                        <tr><td colspan="4">No hay datos</td></tr>
-                    </tbody>
-                </table>
-            </div>
+            <table class="tabla-materiales">
+                <thead>
+                    <tr><th>CANT.</th><th>UND</th><th>CÓDIGO</th><th>DESCRIPCIÓN</th></tr>
+                </thead>
+                <tbody id="tabla-body">
+                    <tr><td colspan="4">No hay datos</td></tr>
+                </tbody>
+            </table>
         </div>
 
         <button class="btn-enviar" onclick="imprimirPDF()">
             <i class="fas fa-file-pdf"></i> GENERAR REPORTE PDF
-        </button>
-
-        <button class="btn-reset" onclick="reiniciarApp()">
-            <i class="fas fa-redo"></i> LIMPIAR TODO
         </button>
     </div>
 
