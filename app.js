@@ -22,11 +22,8 @@ let proyecto = [];
 let sectorActivo = "";
 let nombreUsuario = "";
 
-// Función de Login
-function validarLogin() {
-    // Diagnóstico: Si no ves esta alerta, el archivo script.js es el viejo.
-    console.log("Función validarLogin iniciada");
-
+// FORZAMOS LA FUNCIÓN A SER GLOBAL PARA QUE EL HTML LA VEA SÍ O SÍ
+window.validarLogin = function() {
     const u = document.getElementById('user').value; 
     const p = document.getElementById('pass').value.trim();
 
@@ -47,14 +44,13 @@ function validarLogin() {
         document.getElementById('app-container').style.display = 'block';
         document.getElementById('user-display').innerText = `BIENVENIDO: ${nombreUsuario} | SECTOR: ${sectorActivo}`;
         
-        cargarDatosMateriales();
+        window.cargarDatosMateriales(); // Llamamos a la función global
     } else {
         alert("❌ Contraseña incorrecta para el usuario " + u);
     }
-}
+};
 
-// Descargar Materiales
-async function cargarDatosMateriales() {
+window.cargarDatosMateriales = async function() {
     try {
         const res = await fetch(URL_MATERIALES);
         BASE_DE_DATOS = await res.json();
@@ -73,12 +69,11 @@ async function cargarDatosMateriales() {
             selectTipo.innerHTML += `<option value="${t}">${t}</option>`;
         });
     } catch (error) {
-        console.error("Error al cargar materiales:", error);
+        alert("Error al conectar con la base de Google Sheets.");
     }
-}
+};
 
-// Filtrar Estructuras
-function filtrarEstructuras() {
+window.filtrarEstructuras = function() {
     const tipo = document.getElementById('select-tipo').value;
     const selectEst = document.getElementById('select-estructura');
     selectEst.innerHTML = '<option value="">Estructura...</option>';
@@ -88,10 +83,9 @@ function filtrarEstructuras() {
             selectEst.innerHTML += `<option value="${nombre}">${nombre}</option>`;
         });
     }
-}
+};
 
-// Agregar al Proyecto
-function agregarEstructura() {
+window.agregarEstructura = function() {
     const nombre = document.getElementById('select-estructura').value;
     const cant = parseInt(document.getElementById('input-cantidad').value);
     
@@ -104,11 +98,10 @@ function agregarEstructura() {
     if (itemExistente) itemExistente.cantidad += cant;
     else proyecto.push({ nombre: nombre, cantidad: cant });
     
-    actualizarVista();
-}
+    window.actualizarVista();
+};
 
-// Dibuja Tabla y Lista
-function actualizarVista() {
+window.actualizarVista = function() {
     const ulLista = document.getElementById('lista-estructuras');
     const tbodyTabla = document.getElementById('tabla-body');
     ulLista.innerHTML = ""; tbodyTabla.innerHTML = "";
@@ -127,19 +120,19 @@ function actualizarVista() {
     });
 
     if (proyecto.length === 0) tbodyTabla.innerHTML = '<tr><td colspan="4">No hay datos agregados</td></tr>';
-}
+};
 
-function eliminarItem(index) {
+window.eliminarItem = function(index) {
     proyecto.splice(index, 1);
-    actualizarVista(); 
-}
+    window.actualizarVista(); 
+};
 
-function cerrarSesion() { location.reload(); }
+window.cerrarSesion = function() { location.reload(); };
 
-function imprimirPDF() {
+window.imprimirPDF = function() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     doc.text("CONSOLIDADO DE MATERIALES - ENEE", 10, 10);
     doc.text(`USUARIO: ${nombreUsuario} | SECTOR: ${sectorActivo}`, 10, 20);
     doc.save(`Materiales_${sectorActivo}.pdf`);
-}
+};
