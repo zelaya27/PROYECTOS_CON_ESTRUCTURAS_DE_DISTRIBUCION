@@ -1,128 +1,228 @@
-/* =========================================================================
-   EXPLICACIÓN: Aquí definimos los colores principales, como si fuera la 
-   paleta de pintura. Si algún día queremos cambiar el amarillo por verde, 
-   solo cambiamos el código "#f4c430" aquí y cambia en toda la app entera.
-========================================================================== */
+/* style.css - Diseño Allan Zelaya */
 :root {
-    --bg: #0f1a24;
-    --card: #16232f;
-    --accent: #f4c430; /* Amarillo original de la empresa */
+    --navy: #003366;
+    --navy-dark: #002244;
+    --navy-light: #004a99;
+    --bg: #0b141d;
+    --card: #14212d;
     --text: #ffffff;
-    --border: #2c3e50;
+    --gray: #a0aec0;
+    --danger: #e74c3c;
 }
-/* Ajuste para que el Tipo, la Estructura y la Cantidad quepan en una fila */
-.grid-3-especial {
-    display: grid;
-    grid-template-columns: 1fr 2fr 0.8fr; 
-    gap: 8px;
-    margin-top: 5px;
-}
+
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: var(--bg);
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: var(--bg);
     color: var(--text);
     margin: 0;
-    padding: 15px;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
 }
 
-/* EXPLICACIÓN: "container" asegura que la app no se vea estirada en pantallas gigantes, limitando su ancho al tamaño de un celular o tablet pequeño */
-.container { max-width: 500px; margin: auto; }
-
-header {
-    text-align: center;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 15px;
-}
-
-header h1 {
-    font-size: 1.2rem;
-    color: var(--accent);
-    text-transform: uppercase;
-    margin-top: 10px;
-}
-
-/* EXPLICACIÓN: ".card" es el diseño de las "cajas" contenedoras, les pone un color de fondo un poco más claro que el fondo negro, y redondea las esquinas */
-.card {
-    background: var(--card);
-    padding: 20px;
-    border-radius: 12px;
-    text-align: center;
-    border: 1px solid var(--border);
-}
-
-label {
-    display: block;
-    margin-top: 20px;
-    color: var(--accent);
-    font-size: 0.75rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    border-left: 3px solid var(--accent);
-    padding-left: 10px;
-}
-
-input, select {
+.container, .container-login {
     width: 100%;
-    padding: 12px;
-    background: #1b2a36;
-    border: 1px solid var(--border);
-    color: white;
-    border-radius: 8px;
-    margin-top: 5px;
+    max-width: 450px;
+    padding: 20px;
     box-sizing: border-box;
 }
 
-/* EXPLICACIÓN: Esto divide la pantalla en 2 columnas para poner la lista desplegable al lado del cuadro de cantidad */
-.grid-2 { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
+.login-card {
+    background: var(--card);
+    padding: 40px 30px;
+    border-radius: 20px;
+    border: 2px solid var(--navy);
+    text-align: center;
+    margin-top: 50px;
+}
 
-/* EXPLICACIÓN: Estilo para los botones principales (Grandes y llamativos) */
-.btn-enviar {
-    background: var(--accent);
-    color: #000;
+.logo-circle {
+    background: white;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin: -100px auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid var(--navy);
+    overflow: hidden;
+}
+
+.logo-circle img { width: 80%; }
+
+.input-group {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.input-group i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--navy);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 12px 12px 45px;
+    background: #1b2a36;
+    border: 1px solid var(--navy);
+    border-radius: 10px;
+    color: white;
+    box-sizing: border-box;
+}
+
+.btn-login {
+    background: var(--navy);
+    color: white;
     width: 100%;
     padding: 15px;
     border: none;
     border-radius: 10px;
     font-weight: bold;
-    margin-top: 25px;
     cursor: pointer;
-}
-
-/* EXPLICACIÓN: Estilo para los botones secundarios (Solo con el borde pintado) */
-.btn-secundario {
-    background: transparent;
-    color: var(--accent);
-    width: 100%;
-    padding: 10px;
-    border: 2px solid var(--accent);
-    border-radius: 8px;
+    font-size: 1rem;
     margin-top: 10px;
-    font-weight: bold;
-    cursor: pointer;
 }
 
-.lista-agregados { list-style: none; padding: 0; margin-top: 10px; }
-
-.lista-agregados li {
-    background: #1b2a36;
+.logo-header {
+    background: white;
     padding: 10px;
-    margin-bottom: 5px;
-    border-radius: 6px;
+    border-radius: 10px;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+.logo-header img { max-width: 150px; }
+
+.user-info-bar {
+    background: var(--navy);
+    padding: 8px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    margin-bottom: 20px;
     display: flex;
-    justify-content: space-between;
-    border-left: 3px solid var(--accent);
+    align-items: center;
+    gap: 10px;
 }
 
-/* EXPLICACIÓN: Diseño de la tabla donde se muestra la suma final de materiales */
-.resumen-container {
+.card {
     background: var(--card);
     padding: 15px;
-    border-radius: 8px;
-    margin-top: 20px;
-    border: 1px dashed var(--accent);
+    border-radius: 15px;
+    border: 1px solid var(--navy);
+    margin-bottom: 20px;
 }
 
-.tabla-materiales { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-top: 10px;}
-.tabla-materiales th { background: var(--accent); color: #000; padding: 8px; border: 1px solid var(--border); }
-.tabla-materiales td { padding: 8px; border: 1px solid var(--border); text-align: center; }
+.grid-especial {
+    display: grid;
+    grid-template-columns: 1fr 2fr 0.7fr;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: var(--gray);
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    border-left: 3px solid var(--navy);
+    padding-left: 8px;
+}
+
+select, input[type="number"] {
+    background: #1b2a36;
+    border: 1px solid #2d3748;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    width: 100%;
+}
+
+.btn-enviar {
+    background: var(--navy);
+    color: white;
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btn-secundario {
+    background: transparent;
+    border: 2px solid var(--navy);
+    color: white;
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.btn-salir {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    background: none;
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.7rem;
+    cursor: pointer;
+}
+
+.resumen-box {
+    background: var(--card);
+    border: 1px solid var(--navy);
+    border-radius: 10px;
+    margin-top: 20px;
+    overflow: hidden;
+}
+
+.resumen-header {
+    background: var(--navy);
+    padding: 8px;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.table-wrapper { overflow-x: auto; }
+
+.tabla-materiales {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.65rem;
+}
+
+.tabla-materiales th {
+    background: #1b2a36;
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid var(--navy);
+}
+
+.tabla-materiales td {
+    padding: 8px;
+    border-bottom: 1px solid #2d3748;
+    text-align: center;
+}
+
+.lista-items { list-style: none; padding: 0; }
+.lista-items li {
+    background: #1b2a36;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+}
+
+.error-msg { color: var(--danger); font-size: 0.8rem; display: none; margin-top: 10px; }
