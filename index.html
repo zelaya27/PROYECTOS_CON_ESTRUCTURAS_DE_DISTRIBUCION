@@ -18,7 +18,7 @@
         .logo-circle img { width: 70%; }
         .input-group { position: relative; margin-bottom: 15px; }
         .input-group i { position: absolute; left: 15px; top: 14px; color: var(--navy); }
-        .input-group input, .input-group select { width: 100%; padding: 12px 12px 12px 40px; background: #1b2a36; border: 1px solid var(--navy); border-radius: 10px; color: white; box-sizing: border-box; font-size: 0.9rem; appearance: none; outline: none; cursor: pointer;}
+        .input-group input, .input-group select { width: 100%; padding: 12px 12px 12px 40px; background: #1b2a36; border: 1px solid var(--navy); border-radius: 10px; color: white; box-sizing: border-box; font-size: 0.9rem; }
         .btn-login { background: var(--navy); color: white; width: 100%; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1rem; margin-top: 10px;}
         
         /* APP PRINCIPAL */
@@ -60,19 +60,6 @@
                 <i class="fas fa-user"></i>
                 <select id="user">
                     <option value="">Seleccione su Usuario...</option>
-                    <option value="ADMIN">ADMIN</option>
-                    <option value="ALLAN.MUÑOZ">ALLAN.MUÑOZ</option>
-                    <option value="ALLAN.ZELAYA">ALLAN.ZELAYA</option>
-                    <option value="ALSIDES.PONCE">ALSIDES.PONCE</option>
-                    <option value="AXEL.IRIAS">AXEL.IRIAS</option>
-                    <option value="CARLOS ROMERO">CARLOS ROMERO</option>
-                    <option value="CARLOS.RIVERA">CARLOS.RIVERA</option>
-                    <option value="JONATHAN ORTIZ">JONATHAN ORTIZ</option>
-                    <option value="JOSE PINTO">JOSE PINTO</option>
-                    <option value="JOSUE.ORTIZ">JOSUE.ORTIZ</option>
-                    <option value="JUAN MIRANDA">JUAN MIRANDA</option>
-                    <option value="RENE ALEGRIA">RENE ALEGRIA</option>
-                    <option value="WILSON.ZAVALA">WILSON.ZAVALA</option>
                 </select>
             </div>
             
@@ -135,7 +122,6 @@
     </div>
 
     <script>
-        // 1. Diccionario de Claves y Sectores
         const USUARIOS = {
             "ADMIN": { pass: "admin123", sector: "TEGUCIGALPA" },
             "ALLAN.MUÑOZ": { pass: "12345", sector: "TOCOA" },
@@ -160,7 +146,15 @@
         let sectorActivo = "";
         let nombreUsuario = "";
 
-        // 2. Función de Login
+        // Cargar lista al iniciar
+        window.onload = function() {
+            const selectUser = document.getElementById('user');
+            Object.keys(USUARIOS).forEach(nombre => {
+                selectUser.innerHTML += `<option value="${nombre}">${nombre}</option>`;
+            });
+        };
+
+        // Función de Login
         function validarLogin() {
             const u = document.getElementById('user').value; 
             const p = document.getElementById('pass').value.trim();
@@ -188,7 +182,7 @@
             }
         }
 
-        // 3. Descargar Materiales de Google Sheets
+        // Descargar Materiales
         async function cargarDatosMateriales() {
             try {
                 const res = await fetch(URL_MATERIALES);
@@ -212,7 +206,7 @@
             }
         }
 
-        // 4. Filtrar Estructuras
+        // Filtrar Estructuras
         function filtrarEstructuras() {
             const tipo = document.getElementById('select-tipo').value;
             const selectEst = document.getElementById('select-estructura');
@@ -225,7 +219,7 @@
             }
         }
 
-        // 5. Agregar al Proyecto
+        // Agregar al Proyecto
         function agregarEstructura() {
             const nombre = document.getElementById('select-estructura').value;
             const cant = parseInt(document.getElementById('input-cantidad').value);
@@ -242,7 +236,7 @@
             actualizarVista();
         }
 
-        // 6. Dibujar Tabla y Lista
+        // Dibuja Tabla y Lista
         function actualizarVista() {
             const ulLista = document.getElementById('lista-estructuras');
             const tbodyTabla = document.getElementById('tabla-body');
