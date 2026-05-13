@@ -97,15 +97,19 @@
         </header>
 
         <div class="card">
-            <label>Estructura a agregar:</label>
-            <div class="grid-2">
-                <select id="select-estructura"><option value="">Sincronizando con Drive...</option></select>
-                <input type="number" id="input-cantidad" min="1" value="1">
-            </div>
-            <button type="button" class="btn-secundario" onclick="agregarEstructura()">
-                <i class="fas fa-plus"></i> AÑADIR A LA LISTA
-            </button>
-        </div>
+            
+     <label>Filtrar por Tipo y Estructura:</label>
+<div class="grid-3-especial">
+    <select id="select-tipo" onchange="filtrarEstructuras()">
+        <option value="">Tipo...</option>
+    </select>
+    
+    <select id="select-estructura">
+        <option value="">Estructura...</option>
+    </select>
+    
+    <input type="number" id="input-cantidad" min="1" value="1" placeholder="Cant.">
+</div>
 
         <label>Estructuras en el Proyecto:</label>
         <ul id="lista-estructuras" class="lista-agregados"></ul>
