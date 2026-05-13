@@ -1,4 +1,3 @@
-// 1. BASE DE DATOS
 const USUARIOS = {
     "ADMIN": { pass: "admin123", sector: "TEGUCIGALPA" },
     "ALLAN.MUÑOZ": { pass: "12345", sector: "TOCOA" },
@@ -23,21 +22,7 @@ let proyecto = [];
 let sectorActivo = "";
 let nombreUsuario = "";
 
-// ========================================================
-// 2. INYECCIÓN DIRECTA DE USUARIOS (SOLUCIÓN DEL ERROR)
-// ========================================================
-function forzarLlenadoLista() {
-    const selectUser = document.getElementById('user');
-    if (selectUser) {
-        Object.keys(USUARIOS).forEach(nombre => {
-            selectUser.innerHTML += `<option value="${nombre}">${nombre}</option>`;
-        });
-    }
-}
-// Se ejecuta de inmediato
-forzarLlenadoLista();
-
-// 3. FUNCIÓN DE LOGIN
+// Función de Login
 function validarLogin() {
     const u = document.getElementById('user').value; 
     const p = document.getElementById('pass').value.trim();
@@ -65,7 +50,7 @@ function validarLogin() {
     }
 }
 
-// 4. DESCARGAR MATERIALES
+// Descargar Materiales
 async function cargarDatosMateriales() {
     try {
         const res = await fetch(URL_MATERIALES);
@@ -89,7 +74,7 @@ async function cargarDatosMateriales() {
     }
 }
 
-// 5. FILTRAR ESTRUCTURAS
+// Filtrar Estructuras
 function filtrarEstructuras() {
     const tipo = document.getElementById('select-tipo').value;
     const selectEst = document.getElementById('select-estructura');
@@ -102,7 +87,7 @@ function filtrarEstructuras() {
     }
 }
 
-// 6. AGREGAR AL PROYECTO
+// Agregar al Proyecto
 function agregarEstructura() {
     const nombre = document.getElementById('select-estructura').value;
     const cant = parseInt(document.getElementById('input-cantidad').value);
@@ -119,7 +104,7 @@ function agregarEstructura() {
     actualizarVista();
 }
 
-// 7. DIBUJAR TABLA Y LISTA
+// Dibuja Tabla y Lista
 function actualizarVista() {
     const ulLista = document.getElementById('lista-estructuras');
     const tbodyTabla = document.getElementById('tabla-body');
