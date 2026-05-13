@@ -1,7 +1,16 @@
-/* script.js - Lógica Dinámica Allan Zelaya */
-// EXPLICACIÓN: Esta es tu URL de Apps Script que acabas de generar
-const URL_LOGIN = "https://script.google.com/macros/s/AKfycbwmnaOFx7NmTrNn2DCqLHp29Zcby_-05aSlaYMEoh-WDulZFskdz2ywDdXMkihCUK3Q2Q/exec";
+/* script.js - Allan Zelaya - VERSIÓN ULTRA RÁPIDA (Sin Google Login) */
+
+// URL para los materiales (Esta sí la dejamos en Google porque son muchos datos)
 const URL_MATERIALES = "https://script.google.com/macros/s/AKfycbyPOrzRMPjppI77GDw92aVWzMP382eVNrv3XJ9yqRBAWYEwVxjwoUpzh_SnHWccMIxiIg/exec";
+
+// --- TABLA DE USUARIOS INTEGRADA ---
+// Aquí puedes agregar, quitar o cambiar contraseñas tú mismo.
+const BASE_USUARIOS = [
+    { user: "allan.zelaya", pass: "enee2026", sector: "Juticalpa" },
+    { user: "admin", pass: "admin123", sector: "Tegucigalpa" },
+    { user: "juticalpa", pass: "enee2026", sector: "Juticalpa" },
+    { user: "sps", pass: "enee2026", sector: "San Pedro Sula" }
+];
 
 let BASE_DE_DATOS = {};
 let DATOS_POR_TIPO = {};
@@ -9,45 +18,33 @@ let proyecto = [];
 let sectorActivo = "";
 let nombreUsuario = "";
 
-// --- FUNCIÓN DE LOGIN (Usando JSONP para evitar bloqueos) ---
+// --- FUNCIÓN DE LOGIN INSTANTÁNEO ---
 function validarLogin() {
-    const user = document.getElementById('user_input').value.trim();
-    const pass = document.getElementById('pass_input').value.trim();
-    const btnText = document.getElementById('login-text');
-    const spinner = document.getElementById('login-spinner');
+    const userIn = document.getElementById('user_input').value.trim().toLowerCase();
+    const passIn = document.getElementById('pass_input').value.trim();
     const errorMsg = document.getElementById('login-error');
 
-    if (!user || !pass) {
-        alert("⚠️ Ingrese usuario y contraseña");
-        return;
+    // Buscamos el usuario en nuestra lista interna
+    const encontrado = BASE_USUARIOS.find(u => u.user.toLowerCase() === userIn && u.pass === passIn);
+
+    if (encontrado) {
+        nombreUsuario = encontrado.user.toUpperCase();
+        sectorActivo = encontrado.sector.toUpperCase();
+        
+        // Cambio de pantalla
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('app-container').style.display = 'block';
+        document.getElementById('user-display').innerText = `${nombreUsuario} | SECTOR: ${sectorActivo}`;
+        
+        // Cargamos los materiales desde el Excel (que ahora cargará más rápido al no tener que validar login)
+        cargarDatosMateriales();
+    } else {
+        errorMsg.style.display = 'block';
+        errorMsg.innerText = "❌ Usuario o contraseña incorrectos";
     }
-
-    btnText.style.display = 'none';
-    spinner.style.display = 'inline-block';
-    errorMsg.style.display = 'none';
-
-    // Función que recibirá la respuesta de Google
-    window.handleLoginResponse = function(result) {
-        if (result.success) {
-            nombreUsuario = user.toUpperCase();
-            sectorActivo = result.sector.toUpperCase();
-            document.getElementById('login-container').style.display = 'none';
-            document.getElementById('app-container').style.display = 'block';
-            document.getElementById('user-display').innerText = `${nombreUsuario} | SECTOR: ${sectorActivo}`;
-            cargarDatosMateriales();
-        } else {
-            errorMsg.style.display = 'block';
-            btnText.style.display = 'inline-block';
-            spinner.style.display = 'none';
-        }
-    };
-
-    // Petición mágica para saltar el error de conexión
-    const script = document.createElement('script');
-    script.src = `${URL_LOGIN}?action=login&user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}&callback=handleLoginResponse`;
-    document.body.appendChild(script);
 }
 
+// --- RESTO DE FUNCIONES (Carga de materiales, etc.) ---
 async function cargarDatosMateriales() {
     try {
         const res = await fetch(URL_MATERIALES);
@@ -65,7 +62,7 @@ async function cargarDatosMateriales() {
             let opt = document.createElement('option'); opt.value = t; opt.text = t;
             selectTipo.appendChild(opt);
         });
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("Error al cargar materiales:", e); }
 }
 
 function filtrarEstructuras() {
@@ -109,11 +106,13 @@ function actualizarVista() {
 }
 
 function eliminarItem(i) { proyecto.splice(i, 1); actualizarVista(); }
-function cerrarSesion() { if(confirm("¿Cerrar sesión?")) location.reload(); }
+function reiniciarApp() { if(confirm("¿Limpiar todo?")) { proyecto = []; actualizarVista(); } }
+function cerrarSesion() { location.reload(); }
 
 async function imprimirPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     doc.text("CONSOLIDADO DE MATERIALES - ENEE", 10, 10);
+    doc.text(`SECTOR: ${sectorActivo}`, 10, 20);
     doc.save(`Materiales_${sectorActivo}.pdf`);
 }
