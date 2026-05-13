@@ -6,7 +6,7 @@ const URL_MATERIALES = "https://script.google.com/macros/s/AKfycbyPOrzRMPjppI77G
 // --- TABLA DE USUARIOS INTEGRADA ---
 // Aquí puedes agregar, quitar o cambiar contraseñas tú mismo.
 const BASE_USUARIOS = [
-    { user: "allan.zelaya", pass: "enee2026", sector: "Juticalpa" },
+    { user: "allan.zelaya", pass: "enee2026", sector: "La Ceiba" },
     { user: "admin", pass: "admin123", sector: "Tegucigalpa" },
     { user: "juticalpa", pass: "enee2026", sector: "Juticalpa" },
     { user: "sps", pass: "enee2026", sector: "San Pedro Sula" }
