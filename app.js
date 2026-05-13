@@ -1,18 +1,28 @@
-/* script.js - Allan Zelaya - VERSIÓN ULTRA RÁPIDA */
+/* script.js - Allan Zelaya (Lógica de Login de App Poda + Materiales) */
 
-// URL DE MATERIALES VERIFICADA
 const URL_MATERIALES = "https://script.google.com/macros/s/AKfycbyWyp1BupM-yySWEi7uEbE5jbslKh9JCjR0BuQjCLD14PnP3E01O9alYDirJPB-7U5zgA/exec";
 
-// --- BASE DE USUARIOS EXTRAÍDA DE TU EXCEL ---
-const BASE_USUARIOS = [
-    { user: "JOSUE.ORTIZ", pass: "12345", sector: "JUTICALPA" },
-    { user: "ALLAN.ZELAYA", pass: "12345", sector: "JUTICALPA" },
-    { user: "CARLOS.RIVERA", pass: "12345", sector: "LA CEIBA" },
-    { user: "WILSON.ZAVALA", pass: "12345", sector: "LA CEIBA" },
-    { user: "DAVID.APLICANO", pass: "12345", sector: "TOCOA" },
-    { user: "TOMY.AMED", pass: "12345", sector: "LA CEIBA" },
-    { user: "ADMIN", pass: "enee2026", sector: "TEGUCIGALPA" }
-];
+// 1. TU DICCIONARIO DE USUARIOS (Igual al de la App de Poda)
+const USUARIOS = {
+    "josue.ortiz": "12345",
+    "allan.zelaya": "12345",
+    "carlos.rivera": "12345",
+    "wilson.zavala": "12345",
+    "david.aplicano": "12345",
+    "tomy.amed": "12345",
+    "admin": "enee2026"
+};
+
+// Mapeo de sectores para cuando entren
+const SECTORES = {
+    "josue.ortiz": "JUTICALPA",
+    "allan.zelaya": "JUTICALPA",
+    "carlos.rivera": "LA CEIBA",
+    "wilson.zavala": "LA CEIBA",
+    "david.aplicano": "TOCOA",
+    "tomy.amed": "LA CEIBA",
+    "admin": "TEGUCIGALPA"
+};
 
 let BASE_DE_DATOS = {};
 let DATOS_POR_TIPO = {};
@@ -20,69 +30,63 @@ let proyecto = [];
 let sectorActivo = "";
 let nombreUsuario = "";
 
+// 2. TU FUNCIÓN DE LOGIN (Idéntica a la que sí te funciona)
 function validarLogin() {
-    const userIn = document.getElementById('user_input').value.trim().toUpperCase();
-    const passIn = document.getElementById('pass_input').value.trim();
-    const errorMsg = document.getElementById('login-error');
+    // ATENCIÓN: Asegúrate de que en tu index.html los id sean "user" y "pass"
+    const u = document.getElementById('user_input').value.toLowerCase(); // Ajustado a tu HTML actual
+    const p = document.getElementById('pass_input').value;
 
-    // Validación contra la lista interna
-    const encontrado = BASE_USUARIOS.find(u => u.user === userIn && u.pass === passIn);
-
-    if (encontrado) {
-        nombreUsuario = encontrado.user;
-        sectorActivo = encontrado.sector;
+    if (USUARIOS[u] && USUARIOS[u] === p) {
+        nombreUsuario = u.toUpperCase();
+        sectorActivo = SECTORES[u];
         
+        // Ocultar login y mostrar app
         document.getElementById('login-container').style.display = 'none';
         document.getElementById('app-container').style.display = 'block';
         document.getElementById('user-display').innerText = `${nombreUsuario} | SECTOR: ${sectorActivo}`;
         
+        // Cargar los materiales de Google
         cargarDatosMateriales();
     } else {
-        errorMsg.style.display = 'block';
+        document.getElementById('login-error').style.display = 'block';
     }
 }
 
+// 3. DESCARGA DE ESTRUCTURAS
 async function cargarDatosMateriales() {
     try {
         const res = await fetch(URL_MATERIALES);
         BASE_DE_DATOS = await res.json();
         DATOS_POR_TIPO = {};
         
-        Object.keys(BASE_DE_DATOS).forEach(nombre => {
-            const primerMat = BASE_DE_DATOS[nombre][0];
-            const tipo = primerMat.tipo || nombre.charAt(0).toUpperCase();
+        Object.keys(BASE_DE_DATOS).forEach(nom => {
+            const tipo = BASE_DE_DATOS[nom][0].tipo || nom.charAt(0).toUpperCase();
             if (!DATOS_POR_TIPO[tipo]) DATOS_POR_TIPO[tipo] = [];
-            DATOS_POR_TIPO[tipo].push(nombre);
+            DATOS_POR_TIPO[tipo].push(nom);
         });
 
         const selectTipo = document.getElementById('select-tipo');
         selectTipo.innerHTML = '<option value="">Tipo...</option>';
         Object.keys(DATOS_POR_TIPO).sort().forEach(t => {
-            let opt = document.createElement('option'); opt.value = t; opt.text = t;
-            selectTipo.appendChild(opt);
+            selectTipo.innerHTML += `<option value="${t}">${t}</option>`;
         });
-    } catch (e) { alert("Error cargando base de materiales."); }
+    } catch (e) { alert("Error al cargar la base de materiales de Google."); }
 }
 
+// 4. LÓGICA DE LA CALCULADORA
 function filtrarEstructuras() {
-    const tipo = document.getElementById('select-tipo').value;
-    const selectEst = document.getElementById('select-estructura');
-    selectEst.innerHTML = '<option value="">Estructura...</option>';
-    if (tipo && DATOS_POR_TIPO[tipo]) {
-        DATOS_POR_TIPO[tipo].sort().forEach(nom => {
-            let opt = document.createElement('option'); opt.value = nom; opt.text = nom;
-            selectEst.appendChild(opt);
-        });
-    }
+    const t = document.getElementById('select-tipo').value;
+    const se = document.getElementById('select-estructura');
+    se.innerHTML = '<option value="">Estructura...</option>';
+    if (t) DATOS_POR_TIPO[t].sort().forEach(n => se.innerHTML += `<option value="${n}">${n}</option>`);
 }
 
 function agregarEstructura() {
-    const nombre = document.getElementById('select-estructura').value;
-    const cant = parseInt(document.getElementById('input-cantidad').value);
-    if (!nombre || cant <= 0) return;
-    let item = proyecto.find(p => p.nombre === nombre);
-    if (item) item.cantidad += cant;
-    else proyecto.push({ nombre, cantidad: cant });
+    const n = document.getElementById('select-estructura').value;
+    const c = parseInt(document.getElementById('input-cantidad').value);
+    if (!n || c <= 0) return;
+    let item = proyecto.find(x => x.n === n);
+    if (item) item.c += c; else proyecto.push({ n, c });
     actualizarVista();
 }
 
@@ -92,10 +96,10 @@ function actualizarVista() {
     ul.innerHTML = ""; tbody.innerHTML = "";
     let totales = {};
     proyecto.forEach((p, idx) => {
-        ul.innerHTML += `<li><span><b>${p.cantidad}x</b> ${p.nombre}</span><i class="fas fa-trash-alt" style="color:#e74c3c; cursor:pointer" onclick="eliminarItem(${idx})"></i></li>`;
-        BASE_DE_DATOS[p.nombre].forEach(m => {
+        ul.innerHTML += `<li><span><b>${p.c}x</b> ${p.n}</span><i class="fas fa-trash-alt" style="color:#e74c3c; cursor:pointer" onclick="eliminarItem(${idx})"></i></li>`;
+        BASE_DE_DATOS[p.n].forEach(m => {
             if (!totales[m.codigo]) totales[m.codigo] = { ...m, total: 0 };
-            totales[m.codigo].total += (m.cantidad * p.cantidad);
+            totales[m.codigo].total += (m.cantidad * p.c);
         });
     });
     Object.values(totales).forEach(m => {
