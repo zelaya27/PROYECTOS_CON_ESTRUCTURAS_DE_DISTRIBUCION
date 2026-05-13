@@ -4,53 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ENEE - Calculadora de Materiales</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        /* Definimos nuestros colores corporativos */
         :root {
-            --bg: #0f1a24;
-            --card: #16232f;
-            --accent: #f4c430; /* Amarillo ENEE */
-            --text: #ffffff;
-            --border: #2c3e50;
+            --bg: #0f1a24;        /* Color del fondo de la pantalla */
+            --card: #16232f;      /* Color de los cuadros de control */
+            --accent: #003366;    /* AZUL MARINO para botones y bordes */
+            --text: #ffffff;      /* Color de la letra (blanco) */
+            --border: #1a3a5a;    /* Color de los bordes de los cuadros */
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            margin: 0; padding: 15px;
-        }
-
+        /* Configuración general de la página */
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
         .container { max-width: 500px; margin: auto; }
-
-        header { text-align: center; border-bottom: 1px solid var(--border); margin-bottom: 15px; padding-bottom: 10px; }
-        header h1 { font-size: 1.2rem; color: var(--accent); margin-top: 10px; }
-
-        /* Estilo de las cajas contenedoras */
-        .card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid var(--border); }
-
-        /* Estilo de los textos indicativos */
-        label { display: block; margin-top: 20px; color: var(--accent); font-size: 0.75rem; font-weight: bold; border-left: 3px solid var(--accent); padding-left: 10px; text-transform: uppercase; }
-
-        /* Estilo de las cajas donde el usuario escribe o selecciona */
+        
+        /* Estilo para los títulos y logos */
+        header { text-align: center; border-bottom: 2px solid var(--accent); margin-bottom: 15px; padding-bottom: 10px; position: relative; }
+        header h1 { font-size: 1.2rem; color: #ffffff; margin-top: 10px; text-transform: uppercase; }
+        
+        /* Estilo para las tarjetas o cuadros */
+        .card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid var(--accent); margin-bottom: 15px; }
+        
+        /* Estilo para las etiquetas de texto arriba de los cuadros */
+        label { display: block; margin-top: 20px; color: #ffffff; font-size: 0.75rem; font-weight: bold; border-left: 4px solid var(--accent); padding-left: 10px; text-transform: uppercase; }
+        
+        /* Estilo para los cuadros de escritura y listas desplegables */
         input, select { width: 100%; padding: 12px; background: #1b2a36; border: 1px solid var(--border); color: white; border-radius: 8px; margin-top: 5px; box-sizing: border-box; }
-
+        
+        /* Grid divide una fila en 2 columnas (para cantidad y estructura) */
         .grid-2 { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
 
-        /* Estilos de los botones amarillo y transparente */
-        .btn-enviar { background: var(--accent); color: #000; width: 100%; padding: 15px; border: none; border-radius: 10px; font-weight: bold; margin-top: 25px; cursor: pointer; }
-        .btn-secundario { background: transparent; color: var(--accent); width: 100%; padding: 10px; border: 2px solid var(--accent); border-radius: 8px; margin-top: 10px; font-weight: bold; cursor: pointer; }
-
-        /* Estilos de la tabla de resultados finales */
-        .resumen-container { background: var(--card); padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px dashed var(--accent); }
-        .tabla-materiales { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-top: 10px;}
-        .tabla-materiales th { background: var(--accent); color: #000; padding: 8px; border: 1px solid var(--border); }
-        .tabla-materiales td { padding: 8px; border: 1px solid var(--border); text-align: center; }
+        /* BOTÓN PRINCIPAL (Azul Marino con letra blanca) */
+        .btn-enviar { background: var(--accent); color: #ffffff; width: 100%; padding: 15px; border: none; border-radius: 10px; font-weight: bold; margin-top: 25px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; text-transform: uppercase; }
         
+        /* BOTÓN SECUNDARIO (Solo borde azul marino) */
+        .btn-secundario { background: transparent; color: #ffffff; width: 100%; padding: 10px; border: 2px solid var(--accent); border-radius: 8px; margin-top: 10px; font-weight: bold; cursor: pointer; }
+        
+        /* BOTÓN DE CERRAR SESIÓN (Rojo pequeño) */
+        .btn-salir { position: absolute; right: 0; top: 0; background: transparent; color: #ff4d4d; border: 1px solid #ff4d4d; border-radius: 5px; padding: 5px 10px; font-size: 0.7rem; cursor: pointer; }
+
+        /* Estilo para la lista de lo que vas agregando */
         .lista-agregados { list-style: none; padding: 0; }
-        .lista-agregados li { background: #1b2a36; padding: 10px; margin-bottom: 5px; border-radius: 6px; display: flex; justify-content: space-between; border-left: 3px solid var(--accent); }
+        .lista-agregados li { background: #1b2a36; padding: 10px; margin-bottom: 5px; border-radius: 6px; display: flex; justify-content: space-between; border-left: 4px solid var(--accent); }
+
+        /* Estilo para la tabla de resumen final */
+        .resumen-container { background: var(--card); padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid var(--accent); overflow-x: auto; }
+        .tabla-materiales { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-top: 10px;}
+        .tabla-materiales th { background: var(--accent); color: #ffffff; padding: 8px; border: 1px solid var(--border); }
+        .tabla-materiales td { padding: 8px; border: 1px solid var(--border); text-align: center; color: #d1d8dd; }
     </style>
 </head>
 <body>
@@ -76,20 +81,22 @@
             <label>Contraseña:</label>
             <input type="password" id="pass" placeholder="Ingrese contraseña">
             <button class="btn-enviar" onclick="validarLogin()">INGRESAR</button>
-            <p id="login-error" style="color: #e74c3c; font-size: 0.8rem; display: none;">Credenciales incorrectas</p>
+            <p id="login-error" style="color: #ff4d4d; font-size: 0.8rem; display: none; text-align: center; margin-top: 10px;">Credenciales incorrectas</p>
         </div>
     </div>
 
     <div id="app-container" class="container" style="display: none;">
         <header>
+            <button class="btn-salir" onclick="regresarAlLogin()">CERRAR SESIÓN</button>
+            
             <div style="background-color: white; padding: 10px; border-radius: 8px; display: flex; justify-content: center;">
                 <img src="https://raw.githubusercontent.com/josueortizp87-code/App-Cuadrillas-Distribucion/refs/heads/main/imagenes/UTCD%20Vertical.png" alt="Logo" style="max-width: 180px;">
             </div>
             <h1>CÁLCULO DE MATERIALES</h1>
-            <p id="user-display" style="color: var(--accent); font-weight: bold;"></p>
+            <p id="user-display" style="color: #ffffff; font-weight: bold;"></p>
         </header>
 
-        <div class="card" style="text-align: left;">
+        <div class="card">
             <label>Estructura a agregar:</label>
             <div class="grid-2">
                 <select id="select-estructura"><option value="">Sincronizando con Drive...</option></select>
@@ -100,122 +107,193 @@
             </button>
         </div>
 
-        <label>Lista del Proyecto:</label>
+        <label>Estructuras en el Proyecto:</label>
         <ul id="lista-estructuras" class="lista-agregados"></ul>
 
         <div class="resumen-container">
-            <h3 style="color: var(--accent); text-align: center; margin-top:0;">RESUMEN MATERIALES</h3>
+            <h3 style="color: #ffffff; text-align: center; margin-top:0; font-size: 0.9rem;">CONSOLIDADO FINAL</h3>
             <table class="tabla-materiales">
                 <thead>
                     <tr><th>CANT.</th><th>UNIDAD</th><th>CÓDIGO</th><th>DESCRIPCIÓN</th></tr>
                 </thead>
                 <tbody id="tabla-body-materiales">
-                    <tr><td colspan="4" style="text-align:center; color: #9aa7b1;">No hay estructuras</td></tr>
+                    <tr><td colspan="4">No hay estructuras</td></tr>
                 </tbody>
             </table>
         </div>
-        <button type="button" class="btn-enviar" onclick="limpiarProyecto()" style="background: #c0392b; color: white;">NUEVO PROYECTO</button>
+
+        <button type="button" class="btn-enviar" onclick="imprimirPDF()">
+            <i class="fas fa-file-pdf"></i> GENERAR PDF INSTITUCIONAL
+        </button>
+
+        <button type="button" class="btn-secundario" onclick="limpiarProyecto()" style="border-color: #c0392b; color: #ff4d4d; margin-top: 30px;">
+            <i class="fas fa-trash-alt"></i> REINICIAR TODO
+        </button>
     </div>
 
     <script>
-        // La dirección a tu Google Sheet
+        // Enlace a tu Google Sheets
         const URL_API = "https://script.google.com/macros/s/AKfycbyPOrzRMPjppI77GDw92aVWzMP382eVNrv3XJ9yqRBAWYEwVxjwoUpzh_SnHWccMIxiIg/exec";
         
-        // Las contraseñas permitidas
-        const USUARIOS = {
-            "admin": "admin123", "juticalpa": "enee2026", "la ceiba": "enee2026",
-            "san pedro sula": "enee2026", "tegucigalpa": "enee2026", "danli": "enee2026", "choluteca": "enee2026"
-        };
+        // Usuarios y Claves
+        const USUARIOS = { "admin": "admin123", "juticalpa": "enee2026", "la ceiba": "enee2026", "san pedro sula": "enee2026", "tegucigalpa": "enee2026", "danli": "enee2026", "choluteca": "enee2026" };
 
-        // Memorias de la aplicación
         let BASE_DE_DATOS = {};
         let proyecto = [];
+        let sectorActivo = "";
 
-        // Función que verifica si la contraseña es correcta
+        // FUNCIÓN: Revisa si la clave es correcta
         function validarLogin() {
             const u = document.getElementById('user').value.toLowerCase();
             const p = document.getElementById('pass').value;
-
             if (USUARIOS[u] && USUARIOS[u] === p) {
-                document.getElementById('login-container').style.display = 'none'; // Oculta login
-                document.getElementById('app-container').style.display = 'block'; // Muestra app
-                document.getElementById('user-display').innerText = "Sector: " + u.toUpperCase();
-                cargarDatos(); // Llama a Google Drive
-            } else {
-                document.getElementById('login-error').style.display = 'block';
+                sectorActivo = u.toUpperCase();
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('app-container').style.display = 'block';
+                document.getElementById('user-display').innerText = "Sector: " + sectorActivo;
+                cargarDatos(); // Trae los datos del Drive
+            } else { document.getElementById('login-error').style.display = 'block'; }
+        }
+
+        // FUNCIÓN: Regresa a la pantalla de entrada y borra todo por seguridad
+        function regresarAlLogin() {
+            if(confirm("¿Desea cerrar sesión? Se borrará el cálculo actual.")) {
+                proyecto = [];
+                actualizarUI();
+                document.getElementById('login-container').style.display = 'block';
+                document.getElementById('app-container').style.display = 'none';
+                document.getElementById('pass').value = ""; // Limpia la clave
             }
         }
 
-        // Función que descarga las estructuras desde Google Sheets
+        // FUNCIÓN: Se conecta a Google Sheets para bajar la lista de materiales
         async function cargarDatos() {
             try {
                 const respuesta = await fetch(URL_API);
                 BASE_DE_DATOS = await respuesta.json();
-                
                 const select = document.getElementById('select-estructura');
                 select.innerHTML = '<option value="">Seleccionar estructura...</option>';
-                
-                // Rellena la lista desplegable con los nombres que vinieron del Drive
                 Object.keys(BASE_DE_DATOS).forEach(nombre => {
                     let opt = document.createElement('option');
                     opt.value = nombre; opt.text = nombre;
                     select.appendChild(opt);
                 });
-            } catch (error) {
-                alert("Error al sincronizar con Google Drive. Recargue la página.");
-            }
+            } catch (error) { alert("Error al conectar con Google Sheets."); }
         }
 
-        // Función que guarda lo que el usuario eligió en el "carrito"
+        // FUNCIÓN: Agrega una estructura a la lista de cálculo
         function agregarEstructura() {
             const sel = document.getElementById('select-estructura');
             const estructura = sel.value;
             const cantidad = parseInt(document.getElementById('input-cantidad').value);
-
             if (!estructura || cantidad <= 0) return;
-
             let item = proyecto.find(p => p.nombre === estructura);
             if (item) item.cantidad += cantidad;
             else proyecto.push({ nombre: estructura, cantidad: cantidad });
-
             actualizarUI();
         }
 
-        // Función que suma los materiales y dibuja la tabla
+        // FUNCIÓN: Suma todos los materiales y dibuja la tabla en pantalla
         function actualizarUI() {
             const ul = document.getElementById('lista-estructuras');
             ul.innerHTML = "";
             let consolidados = {};
-
-            // Dibuja la lista de estructuras agregadas
             proyecto.forEach((p, idx) => {
-                ul.innerHTML += `<li><span><b>${p.cantidad}x</b> ${p.nombre}</span><button onclick="proyecto.splice(${idx},1);actualizarUI();" style="color:red; background:none; border:none; cursor:pointer;"><i class="fas fa-trash"></i></button></li>`;
+                ul.innerHTML += `<li><span><b>${p.cantidad}x</b> ${p.nombre}</span><button onclick="proyecto.splice(${idx},1);actualizarUI();" style="color:#ff4d4d; background:none; border:none; cursor:pointer;"><i class="fas fa-trash"></i></button></li>`;
+                BASE_DE_DATOS[p.nombre].forEach(mat => {
+                    if (!consolidados[mat.codigo]) consolidados[mat.codigo] = { ...mat, cantTotal: 0 };
+                    consolidados[mat.codigo].cantTotal += (mat.cantidad * p.cantidad);
+                });
+            });
+            const tbody = document.getElementById('tabla-body-materiales');
+            tbody.innerHTML = "";
+            Object.values(consolidados).forEach(m => {
+                tbody.innerHTML += `<tr><td>${m.cantTotal}</td><td>${m.unidad}</td><td>${m.codigo}</td><td>${m.nombre}</td></tr>`;
+            });
+            if(proyecto.length === 0) { tbody.innerHTML = `<tr><td colspan="4">No hay estructuras</td></tr>`; }
+        }
+
+        // FUNCIÓN: Crea el archivo PDF con el formato oficial
+        async function imprimirPDF() {
+            if (proyecto.length === 0) { alert("No hay materiales para imprimir."); return; }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const logoUrl = "https://raw.githubusercontent.com/josueortizp87-code/App-Cuadrillas-Distribucion/refs/heads/main/imagenes/UTCD%20Vertical.png";
+
+            // Convierte el logo para que el PDF lo pueda leer
+            const getLogoBase64 = (url) => {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.crossOrigin = 'Anonymous';
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width; canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        resolve(canvas.toDataURL('image/png'));
+                    };
+                    img.src = url;
+                });
+            };
+
+            const logoImg = await getLogoBase64(logoUrl);
+
+            // Dibuja el encabezado institucional en el PDF
+            const dibujarFormato = () => {
+                doc.setDrawColor(0, 51, 102); doc.setLineWidth(0.5); // Bordes azul marino en PDF
+                doc.rect(5, 5, 200, 287); // Marco de la hoja
                 
-                // Hace las sumas matemáticas
+                doc.setLineWidth(0.3);
+                doc.rect(10, 10, 190, 25); // Cajetín
+                doc.line(60, 10, 60, 35); doc.line(150, 10, 150, 35);
+                
+                if (logoImg) { doc.addImage(logoImg, 'PNG', 12, 12, 45, 20); }
+
+                doc.setFont("helvetica", "bold"); doc.setFontSize(11);
+                doc.text("CONSOLIDADO DE MATERIALES POR PROYECTO", 105, 19, {align: "center"});
+                doc.text("SECTOR: " + sectorActivo, 105, 27, {align: "center"});
+
+                doc.setFontSize(8); doc.text("Fecha:", 152, 18);
+                doc.setFont("helvetica", "normal"); doc.text(new Date().toLocaleDateString(), 170, 18);
+            };
+
+            dibujarFormato();
+
+            // Escribe la lista de materiales en el PDF
+            let y = 45;
+            doc.setFont("helvetica", "bold"); doc.setFontSize(9);
+            doc.setFillColor(0, 51, 102); doc.rect(10, y, 190, 7, 'F'); // Fondo azul para títulos
+            doc.setTextColor(255, 255, 255);
+            doc.text("CANT.", 15, y + 5); doc.text("UND", 35, y + 5); doc.text("CÓDIGO", 55, y + 5); doc.text("DESCRIPCIÓN DEL MATERIAL", 90, y + 5);
+
+            y += 12;
+            doc.setTextColor(0, 0, 0); doc.setFont("helvetica", "normal");
+
+            let consolidados = {};
+            proyecto.forEach(p => {
                 BASE_DE_DATOS[p.nombre].forEach(mat => {
                     if (!consolidados[mat.codigo]) consolidados[mat.codigo] = { ...mat, cantTotal: 0 };
                     consolidados[mat.codigo].cantTotal += (mat.cantidad * p.cantidad);
                 });
             });
 
-            // Dibuja la tabla final
-            const tbody = document.getElementById('tabla-body-materiales');
-            tbody.innerHTML = "";
             Object.values(consolidados).forEach(m => {
-                tbody.innerHTML += `<tr><td>${m.cantTotal}</td><td>${m.unidad}</td><td>${m.codigo}</td><td>${m.nombre}</td></tr>`;
+                if(y > 270) { doc.addPage(); dibujarFormato(); y = 45; }
+                doc.text(m.cantTotal.toString(), 15, y);
+                doc.text(m.unidad, 35, y);
+                doc.text(m.codigo.toString(), 55, y);
+                doc.text(m.nombre, 90, y);
+                doc.setDrawColor(200); doc.line(10, y+2, 200, y+2); // Línea gris tenue
+                y += 8;
             });
 
-            if(proyecto.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: #9aa7b1;">No hay estructuras</td></tr>`;
-            }
+            doc.save(`Materiales_${sectorActivo}.pdf`);
         }
 
-        // Función para empezar de cero
+        // FUNCIÓN: Borra el proyecto actual para empezar uno nuevo
         function limpiarProyecto() {
-            if(confirm("¿Limpiar cálculo actual?")) {
-                proyecto = [];
-                actualizarUI();
-            }
+            if(confirm("¿Desea borrar todo para empezar un cálculo nuevo?")) { proyecto = []; actualizarUI(); }
         }
     </script>
 </body>
