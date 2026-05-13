@@ -24,6 +24,9 @@ let nombreUsuario = "";
 
 // Función de Login
 function validarLogin() {
+    // Diagnóstico: Si no ves esta alerta, el archivo script.js es el viejo.
+    console.log("Función validarLogin iniciada");
+
     const u = document.getElementById('user').value; 
     const p = document.getElementById('pass').value.trim();
 
@@ -70,7 +73,7 @@ async function cargarDatosMateriales() {
             selectTipo.innerHTML += `<option value="${t}">${t}</option>`;
         });
     } catch (error) {
-        alert("Error al conectar con la base de Google Sheets.");
+        console.error("Error al cargar materiales:", error);
     }
 }
 
