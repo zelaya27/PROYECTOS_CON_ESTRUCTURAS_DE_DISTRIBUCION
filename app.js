@@ -1,6 +1,18 @@
-/* script.js - Lógica Dinámica Allan Zelaya */
-const URL_LOGIN = "https://script.google.com/macros/s/AKfycbwmnaOFx7NmTrNn2DCqLHp29Zcby_-05aSlaYMEoh-WDulZFskdz2ywDdXMkihCUK3Q2Q/exec";
+/* script.js - Allan Zelaya - VERSIÓN ULTRA RÁPIDA */
+
+// URL DE MATERIALES VERIFICADA
 const URL_MATERIALES = "https://script.google.com/macros/s/AKfycbyWyp1BupM-yySWEi7uEbE5jbslKh9JCjR0BuQjCLD14PnP3E01O9alYDirJPB-7U5zgA/exec";
+
+// --- BASE DE USUARIOS EXTRAÍDA DE TU EXCEL ---
+const BASE_USUARIOS = [
+    { user: "JOSUE.ORTIZ", pass: "12345", sector: "JUTICALPA" },
+    { user: "ALLAN.ZELAYA", pass: "12345", sector: "JUTICALPA" },
+    { user: "CARLOS.RIVERA", pass: "12345", sector: "LA CEIBA" },
+    { user: "WILSON.ZAVALA", pass: "12345", sector: "LA CEIBA" },
+    { user: "DAVID.APLICANO", pass: "12345", sector: "TOCOA" },
+    { user: "TOMY.AMED", pass: "12345", sector: "LA CEIBA" },
+    { user: "ADMIN", pass: "enee2026", sector: "TEGUCIGALPA" }
+];
 
 let BASE_DE_DATOS = {};
 let DATOS_POR_TIPO = {};
@@ -9,36 +21,25 @@ let sectorActivo = "";
 let nombreUsuario = "";
 
 function validarLogin() {
-    const user = document.getElementById('user_input').value.trim();
-    const pass = document.getElementById('pass_input').value.trim();
-    const btnText = document.getElementById('login-text');
-    const spinner = document.getElementById('login-spinner');
+    const userIn = document.getElementById('user_input').value.trim().toUpperCase();
+    const passIn = document.getElementById('pass_input').value.trim();
     const errorMsg = document.getElementById('login-error');
 
-    if (!user || !pass) { alert("⚠️ Ingrese usuario y contraseña"); return; }
+    // Validación contra la lista interna
+    const encontrado = BASE_USUARIOS.find(u => u.user === userIn && u.pass === passIn);
 
-    btnText.style.display = 'none';
-    spinner.style.display = 'inline-block';
-    errorMsg.style.display = 'none';
-
-    window.handleLoginResponse = function(result) {
-        if (result.success) {
-            nombreUsuario = user.toUpperCase();
-            sectorActivo = result.sector.toUpperCase();
-            document.getElementById('login-container').style.display = 'none';
-            document.getElementById('app-container').style.display = 'block';
-            document.getElementById('user-display').innerText = `${nombreUsuario} | SECTOR: ${sectorActivo}`;
-            cargarDatosMateriales();
-        } else {
-            errorMsg.style.display = 'block';
-            btnText.style.display = 'inline-block';
-            spinner.style.display = 'none';
-        }
-    };
-
-    const script = document.createElement('script');
-    script.src = `${URL_LOGIN}?action=login&user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}&callback=handleLoginResponse`;
-    document.body.appendChild(script);
+    if (encontrado) {
+        nombreUsuario = encontrado.user;
+        sectorActivo = encontrado.sector;
+        
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('app-container').style.display = 'block';
+        document.getElementById('user-display').innerText = `${nombreUsuario} | SECTOR: ${sectorActivo}`;
+        
+        cargarDatosMateriales();
+    } else {
+        errorMsg.style.display = 'block';
+    }
 }
 
 async function cargarDatosMateriales() {
@@ -46,19 +47,21 @@ async function cargarDatosMateriales() {
         const res = await fetch(URL_MATERIALES);
         BASE_DE_DATOS = await res.json();
         DATOS_POR_TIPO = {};
+        
         Object.keys(BASE_DE_DATOS).forEach(nombre => {
             const primerMat = BASE_DE_DATOS[nombre][0];
             const tipo = primerMat.tipo || nombre.charAt(0).toUpperCase();
             if (!DATOS_POR_TIPO[tipo]) DATOS_POR_TIPO[tipo] = [];
             DATOS_POR_TIPO[tipo].push(nombre);
         });
+
         const selectTipo = document.getElementById('select-tipo');
         selectTipo.innerHTML = '<option value="">Tipo...</option>';
         Object.keys(DATOS_POR_TIPO).sort().forEach(t => {
             let opt = document.createElement('option'); opt.value = t; opt.text = t;
             selectTipo.appendChild(opt);
         });
-    } catch (e) { console.error(e); }
+    } catch (e) { alert("Error cargando base de materiales."); }
 }
 
 function filtrarEstructuras() {
@@ -108,5 +111,6 @@ async function imprimirPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     doc.text("CONSOLIDADO DE MATERIALES - ENEE", 10, 10);
+    doc.text(`USUARIO: ${nombreUsuario} | SECTOR: ${sectorActivo}`, 10, 20);
     doc.save(`Materiales_${sectorActivo}.pdf`);
 }
