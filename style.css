@@ -16,7 +16,8 @@ body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: 
 .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--navy); }
 .input-group input { width: 100%; padding: 12px 12px 12px 45px; background: #1b2a36; border: 1px solid var(--navy); border-radius: 10px; color: white; box-sizing: border-box; }
 
-.btn-login { background: var(--navy); color: white; width: 100%; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+.btn-login { background: var(--navy); color: white; width: 100%; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; }
+
 .logo-header { background: white; padding: 10px; border-radius: 10px; display: inline-block; margin-bottom: 10px; }
 .logo-header img { max-width: 150px; }
 .user-info-bar { background: var(--navy); padding: 8px; border-radius: 5px; font-size: 0.8rem; margin-bottom: 20px; text-align: center; }
@@ -27,7 +28,7 @@ body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: 
 label { display: block; font-size: 0.7rem; font-weight: bold; color: #a0aec0; text-transform: uppercase; margin-bottom: 5px; border-left: 3px solid var(--navy); padding-left: 8px; }
 select, input[type="number"] { background: #1b2a36; border: 1px solid #2d3748; color: white; padding: 10px; border-radius: 8px; width: 100%; }
 
-.btn-enviar { background: var(--navy); color: white; width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; }
+.btn-enviar { background: var(--navy); color: white; width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; }
 .btn-secundario { background: transparent; border: 2px solid var(--navy); color: white; width: 100%; padding: 12px; border-radius: 10px; cursor: pointer; }
 .btn-salir { position: absolute; right: 15px; top: 15px; background: none; border: 1px solid #e74c3c; color: #e74c3c; padding: 5px 10px; border-radius: 5px; font-size: 0.7rem; cursor: pointer; }
 
