@@ -4,10 +4,10 @@
 :root {
     --bg: #0f1a24;
     --card: #16232f;
-    --accent: #003366; /* Azul Marino */
-    --accent-light: #00509d; /* Azul un poco más claro para efectos */
+    --accent: #003366; /* Azul Marino ENEE */
+    --accent-hover: #004a94;
     --text: #ffffff;
-    --border: #1a3a5a; /* Borde en tono azulado */
+    --border: #1a3a5a;
 }
 
 /* ================================
@@ -22,7 +22,7 @@ body {
 }
 
 .container {
-    max-width: 500px;
+    max-width: 600px;
     margin: auto;
 }
 
@@ -32,33 +32,27 @@ body {
 header {
     text-align: center;
     padding: 10px 0;
-    border-bottom: 2px solid var(--accent); /* Borde azul marino */
-    margin-bottom: 15px;
+    border-bottom: 2px solid var(--accent);
+    margin-bottom: 20px;
 }
 
 header h1 {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     color: var(--text);
     text-transform: uppercase;
     margin-top: 10px;
+    letter-spacing: 1px;
 }
 
 /* ================================
-   TARJETAS Y LOGIN
+   TARJETAS
 ================================ */
 .card {
     background: var(--card);
-    padding: 20px;
+    padding: 15px;
     border-radius: 12px;
-    text-align: center;
-    border: 1px solid var(--accent); /* Borde azul marino */
-}
-
-.card i {
-    font-size: 2.2rem;
-    color: var(--accent);
-    margin-bottom: 10px;
-    display: block;
+    border: 1px solid var(--border);
+    margin-bottom: 15px;
 }
 
 /* ================================
@@ -66,16 +60,15 @@ header h1 {
 ================================ */
 label {
     display: block;
-    margin-top: 20px;
-    color: var(--text);
-    font-size: 0.75rem;
+    margin-top: 15px;
+    color: #9aa7b1;
+    font-size: 0.7rem;
     font-weight: bold;
     text-transform: uppercase;
-    border-left: 4px solid var(--accent); /* Detalle azul marino */
-    padding-left: 10px;
+    padding-left: 5px;
 }
 
-input, select, textarea {
+input, select {
     width: 100%;
     padding: 12px;
     background: #1b2a36;
@@ -84,79 +77,107 @@ input, select, textarea {
     border-radius: 8px;
     margin-top: 5px;
     box-sizing: border-box;
-    font-size: 1rem;
+    font-size: 0.95rem;
 }
 
 /* ================================
-   BOTONES (MODIFICADOS)
+   BOTONES
 ================================ */
 .btn-enviar {
     background: var(--accent);
-    color: #ffffff; /* Texto en blanco para fondo azul */
+    color: white;
     width: 100%;
     padding: 15px;
-    border: 1px solid var(--accent-light);
+    border: none;
     border-radius: 10px;
     font-weight: bold;
-    margin-top: 25px;
+    margin-top: 20px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.9rem;
     transition: 0.3s;
     text-transform: uppercase;
 }
 
-.btn-enviar:hover {
-    background: var(--accent-light);
-}
-
-.btn-enviar:active {
-    transform: scale(0.98);
-}
+.btn-enviar:hover { background: var(--accent-hover); }
 
 .btn-secundario {
     background: transparent;
-    color: #ffffff;
+    color: white;
     width: 100%;
-    padding: 10px;
-    border: 2px solid var(--accent); /* Borde azul marino */
+    padding: 12px;
+    border: 2px solid var(--accent);
     border-radius: 8px;
-    margin-top: 10px;
+    margin-top: 15px;
     font-size: 0.8rem;
     font-weight: bold;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: 0.3s;
 }
 
-.btn-secundario:hover {
-    background: var(--accent);
-    color: #ffffff;
-}
+.btn-secundario:hover { background: var(--accent); }
 
 /* ================================
-   LISTAS Y TABLAS
+   LISTA DE AGREGADOS
 ================================ */
+.lista-agregados {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+}
+
 .lista-agregados li {
     background: #1b2a36;
-    padding: 10px;
-    margin-bottom: 5px;
-    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-left: 4px solid var(--accent); /* Detalle azul marino */
-    font-size: 0.9rem;
+    border-left: 5px solid var(--accent);
+}
+
+.btn-eliminar {
+    background: #c0392b;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* ================================
+   TABLA DE MATERIALES (ESTILO IMAGEN)
+================================ */
+.resumen-container {
+    background: var(--card);
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 20px;
+    border: 1px solid var(--accent);
+    overflow-x: auto; /* Para que no se rompa en móviles */
+}
+
+.tabla-materiales {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 0.8rem;
 }
 
 .tabla-materiales th {
     background: var(--accent);
-    color: #ffffff;
-    font-weight: bold;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    border: 1px solid var(--border);
 }
 
-.resumen-container {
-    background: var(--card);
-    padding: 15px;
-    border-radius: 8px;
-    margin-top: 20px;
-    border: 1px solid var(--accent); /* Borde azul marino */
+.tabla-materiales td {
+    padding: 8px;
+    border: 1px solid var(--border);
+    color: #d1d8dd;
+}
+
+.tabla-materiales tr:nth-child(even) {
+    background: #1f2d3a;
 }
