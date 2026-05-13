@@ -1,3 +1,4 @@
+// 1. BASE DE DATOS
 const USUARIOS = {
     "ADMIN": { pass: "admin123", sector: "TEGUCIGALPA" },
     "ALLAN.MUÑOZ": { pass: "12345", sector: "TOCOA" },
@@ -22,15 +23,21 @@ let proyecto = [];
 let sectorActivo = "";
 let nombreUsuario = "";
 
-// Cargar lista al iniciar
-window.onload = function() {
+// ========================================================
+// 2. INYECCIÓN DIRECTA DE USUARIOS (SOLUCIÓN DEL ERROR)
+// ========================================================
+function forzarLlenadoLista() {
     const selectUser = document.getElementById('user');
-    Object.keys(USUARIOS).forEach(nombre => {
-        selectUser.innerHTML += `<option value="${nombre}">${nombre}</option>`;
-    });
-};
+    if (selectUser) {
+        Object.keys(USUARIOS).forEach(nombre => {
+            selectUser.innerHTML += `<option value="${nombre}">${nombre}</option>`;
+        });
+    }
+}
+// Se ejecuta de inmediato
+forzarLlenadoLista();
 
-// Función de Login
+// 3. FUNCIÓN DE LOGIN
 function validarLogin() {
     const u = document.getElementById('user').value; 
     const p = document.getElementById('pass').value.trim();
@@ -58,7 +65,7 @@ function validarLogin() {
     }
 }
 
-// Descargar Materiales
+// 4. DESCARGAR MATERIALES
 async function cargarDatosMateriales() {
     try {
         const res = await fetch(URL_MATERIALES);
@@ -82,7 +89,7 @@ async function cargarDatosMateriales() {
     }
 }
 
-// Filtrar Estructuras
+// 5. FILTRAR ESTRUCTURAS
 function filtrarEstructuras() {
     const tipo = document.getElementById('select-tipo').value;
     const selectEst = document.getElementById('select-estructura');
@@ -95,7 +102,7 @@ function filtrarEstructuras() {
     }
 }
 
-// Agregar al Proyecto
+// 6. AGREGAR AL PROYECTO
 function agregarEstructura() {
     const nombre = document.getElementById('select-estructura').value;
     const cant = parseInt(document.getElementById('input-cantidad').value);
@@ -112,7 +119,7 @@ function agregarEstructura() {
     actualizarVista();
 }
 
-// Dibuja Tabla y Lista
+// 7. DIBUJAR TABLA Y LISTA
 function actualizarVista() {
     const ulLista = document.getElementById('lista-estructuras');
     const tbodyTabla = document.getElementById('tabla-body');
