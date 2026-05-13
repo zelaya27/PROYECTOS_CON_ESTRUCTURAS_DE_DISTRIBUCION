@@ -1,0 +1,162 @@
+/* ================================
+   VARIABLES DE COLOR - AZUL MARINO
+================================ */
+:root {
+    --bg: #0f1a24;
+    --card: #16232f;
+    --accent: #003366; /* Azul Marino */
+    --accent-light: #00509d; /* Azul un poco más claro para efectos */
+    --text: #ffffff;
+    --border: #1a3a5a; /* Borde en tono azulado */
+}
+
+/* ================================
+   BASE
+================================ */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 15px;
+}
+
+.container {
+    max-width: 500px;
+    margin: auto;
+}
+
+/* ================================
+   HEADER
+================================ */
+header {
+    text-align: center;
+    padding: 10px 0;
+    border-bottom: 2px solid var(--accent); /* Borde azul marino */
+    margin-bottom: 15px;
+}
+
+header h1 {
+    font-size: 1.2rem;
+    color: var(--text);
+    text-transform: uppercase;
+    margin-top: 10px;
+}
+
+/* ================================
+   TARJETAS Y LOGIN
+================================ */
+.card {
+    background: var(--card);
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid var(--accent); /* Borde azul marino */
+}
+
+.card i {
+    font-size: 2.2rem;
+    color: var(--accent);
+    margin-bottom: 10px;
+    display: block;
+}
+
+/* ================================
+   FORMULARIOS
+================================ */
+label {
+    display: block;
+    margin-top: 20px;
+    color: var(--text);
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-left: 4px solid var(--accent); /* Detalle azul marino */
+    padding-left: 10px;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    background: #1b2a36;
+    border: 1px solid var(--border);
+    color: white;
+    border-radius: 8px;
+    margin-top: 5px;
+    box-sizing: border-box;
+    font-size: 1rem;
+}
+
+/* ================================
+   BOTONES (MODIFICADOS)
+================================ */
+.btn-enviar {
+    background: var(--accent);
+    color: #ffffff; /* Texto en blanco para fondo azul */
+    width: 100%;
+    padding: 15px;
+    border: 1px solid var(--accent-light);
+    border-radius: 10px;
+    font-weight: bold;
+    margin-top: 25px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: 0.3s;
+    text-transform: uppercase;
+}
+
+.btn-enviar:hover {
+    background: var(--accent-light);
+}
+
+.btn-enviar:active {
+    transform: scale(0.98);
+}
+
+.btn-secundario {
+    background: transparent;
+    color: #ffffff;
+    width: 100%;
+    padding: 10px;
+    border: 2px solid var(--accent); /* Borde azul marino */
+    border-radius: 8px;
+    margin-top: 10px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-secundario:hover {
+    background: var(--accent);
+    color: #ffffff;
+}
+
+/* ================================
+   LISTAS Y TABLAS
+================================ */
+.lista-agregados li {
+    background: #1b2a36;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid var(--accent); /* Detalle azul marino */
+    font-size: 0.9rem;
+}
+
+.tabla-materiales th {
+    background: var(--accent);
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.resumen-container {
+    background: var(--card);
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    border: 1px solid var(--accent); /* Borde azul marino */
+}
