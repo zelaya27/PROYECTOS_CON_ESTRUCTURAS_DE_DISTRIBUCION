@@ -39,30 +39,68 @@ function validarLogin() {
 }
 
 // -------------------------------------------------------------------------
-// FUNCIÓN 2: cargarDatos (El Mensajero)
-// ¿Qué hace?: Viaja por internet hasta tu Google Sheet, copia toda la tabla 
-// de materiales, vuelve, y rellena la lista desplegable de estructuras.
-// -------------------------------------------------------------------------
+//FUNCION 2 CARGAR Y FILTRAR
+// Variable global para organizar los datos por tipo
+let DATOS_POR_TIPO = {};
+
 async function cargarDatos() {
     try {
-        const respuesta = await fetch(URL_API); // Va a la URL de Google Drive
-        BASE_DE_DATOS = await respuesta.json(); // Guarda la respuesta en la caja vacía
+        const respuesta = await fetch(URL_API);
+        const dataOriginal = await respuesta.json();
         
-        const select = document.getElementById('select-estructura');
-        select.innerHTML = '<option value="">Seleccionar estructura...</option>'; // Limpia el mensaje de "Cargando..."
-        
-        // Toma cada nombre de estructura que vino de Google y crea una "opción" en el menú desplegable
+        // Reiniciamos los objetos
+        BASE_DE_DATOS = dataOriginal;
+        DATOS_POR_TIPO = {};
+
+        // Paso A: Organizar las estructuras según su tipo (A, B, H, etc.)
+        // Nota: Asumimos que el tipo viene en la data de Google Sheets
         Object.keys(BASE_DE_DATOS).forEach(nombre => {
-            let opt = document.createElement('option');
-            opt.value = nombre; opt.text = nombre;
-            select.appendChild(opt);
+            // Intentamos obtener el tipo (usualmente es la primera letra o un campo específico)
+            // Aquí lo extraeremos de la información que viene de tu Sheet
+            const infoEstructura = BASE_DE_DATOS[nombre][0]; 
+            const tipo = infoEstructura.tipo || "OTRO"; // 'tipo' debe ser el nombre de la columna en tu Excel
+
+            if (!DATOS_POR_TIPO[tipo]) {
+                DATOS_POR_TIPO[tipo] = [];
+            }
+            DATOS_POR_TIPO[tipo].push(nombre);
         });
-    } catch (error) { // Si se cae el internet o falla algo...
-        console.error(error);
-        alert("Error al sincronizar con Google Drive");
+
+        // Paso B: Llenar el primer selector (el de TIPOS)
+        const selectTipo = document.getElementById('select-tipo');
+        selectTipo.innerHTML = '<option value="">Tipo...</option>';
+        
+        Object.keys(DATOS_POR_TIPO).sort().forEach(tipo => {
+            let opt = document.createElement('option');
+            opt.value = tipo;
+            opt.text = tipo;
+            selectTipo.appendChild(opt);
+        });
+
+        document.getElementById('select-estructura').innerHTML = '<option value="">Seleccione Tipo primero</option>';
+
+    } catch (error) {
+        alert("Error al conectar con Google Sheets.");
     }
 }
 
+// ESTA FUNCIÓN HACE LA MAGIA: Se activa cuando cambias el Tipo
+function filtrarEstructuras() {
+    const tipoSeleccionado = document.getElementById('select-tipo').value;
+    const selectEst = document.getElementById('select-estructura');
+    
+    selectEst.innerHTML = '<option value="">Estructura...</option>';
+    
+    if (tipoSeleccionado && DATOS_POR_TIPO[tipoSeleccionado]) {
+        // Solo mostramos las estructuras que pertenecen al tipo elegido
+        DATOS_POR_TIPO[tipoSeleccionado].sort().forEach(nombre => {
+            let opt = document.createElement('option');
+            opt.value = nombre;
+            opt.text = nombre;
+            selectEst.appendChild(opt);
+        });
+    }
+}
 // -------------------------------------------------------------------------
 // FUNCIÓN 3: agregarEstructura (El Cajero del Supermercado)
 // ¿Qué hace?: Cuando tocas "AÑADIR A LA LISTA", toma el nombre de la 
