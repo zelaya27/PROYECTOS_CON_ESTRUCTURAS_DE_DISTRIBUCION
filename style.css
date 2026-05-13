@@ -1,18 +1,16 @@
-/* ================================
-   VARIABLES DE COLOR - AZUL MARINO
-================================ */
+/* =========================================================================
+   EXPLICACIÓN: Aquí definimos los colores principales, como si fuera la 
+   paleta de pintura. Si algún día queremos cambiar el amarillo por verde, 
+   solo cambiamos el código "#f4c430" aquí y cambia en toda la app entera.
+========================================================================== */
 :root {
     --bg: #0f1a24;
     --card: #16232f;
-    --accent: #003366; /* Azul Marino ENEE */
-    --accent-hover: #004a94;
+    --accent: #f4c430; /* Amarillo original de la empresa */
     --text: #ffffff;
-    --border: #1a3a5a;
+    --border: #2c3e50;
 }
 
-/* ================================
-   BASE
-================================ */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: var(--bg);
@@ -21,51 +19,41 @@ body {
     padding: 15px;
 }
 
-.container {
-    max-width: 600px;
-    margin: auto;
-}
+/* EXPLICACIÓN: "container" asegura que la app no se vea estirada en pantallas gigantes, limitando su ancho al tamaño de un celular o tablet pequeño */
+.container { max-width: 500px; margin: auto; }
 
-/* ================================
-   HEADER
-================================ */
 header {
     text-align: center;
     padding: 10px 0;
-    border-bottom: 2px solid var(--accent);
-    margin-bottom: 20px;
-}
-
-header h1 {
-    font-size: 1.1rem;
-    color: var(--text);
-    text-transform: uppercase;
-    margin-top: 10px;
-    letter-spacing: 1px;
-}
-
-/* ================================
-   TARJETAS
-================================ */
-.card {
-    background: var(--card);
-    padding: 15px;
-    border-radius: 12px;
-    border: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
     margin-bottom: 15px;
 }
 
-/* ================================
-   FORMULARIOS
-================================ */
+header h1 {
+    font-size: 1.2rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-top: 10px;
+}
+
+/* EXPLICACIÓN: ".card" es el diseño de las "cajas" contenedoras, les pone un color de fondo un poco más claro que el fondo negro, y redondea las esquinas */
+.card {
+    background: var(--card);
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid var(--border);
+}
+
 label {
     display: block;
-    margin-top: 15px;
-    color: #9aa7b1;
-    font-size: 0.7rem;
+    margin-top: 20px;
+    color: var(--accent);
+    font-size: 0.75rem;
     font-weight: bold;
     text-transform: uppercase;
-    padding-left: 5px;
+    border-left: 3px solid var(--accent);
+    padding-left: 10px;
 }
 
 input, select {
@@ -77,107 +65,58 @@ input, select {
     border-radius: 8px;
     margin-top: 5px;
     box-sizing: border-box;
-    font-size: 0.95rem;
 }
 
-/* ================================
-   BOTONES
-================================ */
+/* EXPLICACIÓN: Esto divide la pantalla en 2 columnas para poner la lista desplegable al lado del cuadro de cantidad */
+.grid-2 { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
+
+/* EXPLICACIÓN: Estilo para los botones principales (Grandes y llamativos) */
 .btn-enviar {
     background: var(--accent);
-    color: white;
+    color: #000;
     width: 100%;
     padding: 15px;
     border: none;
     border-radius: 10px;
     font-weight: bold;
-    margin-top: 20px;
+    margin-top: 25px;
     cursor: pointer;
-    font-size: 0.9rem;
-    transition: 0.3s;
-    text-transform: uppercase;
 }
 
-.btn-enviar:hover { background: var(--accent-hover); }
-
+/* EXPLICACIÓN: Estilo para los botones secundarios (Solo con el borde pintado) */
 .btn-secundario {
     background: transparent;
-    color: white;
+    color: var(--accent);
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     border: 2px solid var(--accent);
     border-radius: 8px;
-    margin-top: 15px;
-    font-size: 0.8rem;
+    margin-top: 10px;
     font-weight: bold;
     cursor: pointer;
-    transition: 0.3s;
 }
 
-.btn-secundario:hover { background: var(--accent); }
-
-/* ================================
-   LISTA DE AGREGADOS
-================================ */
-.lista-agregados {
-    list-style: none;
-    padding: 0;
-    margin-top: 10px;
-}
+.lista-agregados { list-style: none; padding: 0; margin-top: 10px; }
 
 .lista-agregados li {
     background: #1b2a36;
-    padding: 12px;
-    margin-bottom: 8px;
-    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 6px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    border-left: 5px solid var(--accent);
+    border-left: 3px solid var(--accent);
 }
 
-.btn-eliminar {
-    background: #c0392b;
-    border: none;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-/* ================================
-   TABLA DE MATERIALES (ESTILO IMAGEN)
-================================ */
+/* EXPLICACIÓN: Diseño de la tabla donde se muestra la suma final de materiales */
 .resumen-container {
     background: var(--card);
-    padding: 10px;
-    border-radius: 10px;
+    padding: 15px;
+    border-radius: 8px;
     margin-top: 20px;
-    border: 1px solid var(--accent);
-    overflow-x: auto; /* Para que no se rompa en móviles */
+    border: 1px dashed var(--accent);
 }
 
-.tabla-materiales {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-    font-size: 0.8rem;
-}
-
-.tabla-materiales th {
-    background: var(--accent);
-    color: white;
-    padding: 10px;
-    text-align: center;
-    border: 1px solid var(--border);
-}
-
-.tabla-materiales td {
-    padding: 8px;
-    border: 1px solid var(--border);
-    color: #d1d8dd;
-}
-
-.tabla-materiales tr:nth-child(even) {
-    background: #1f2d3a;
-}
+.tabla-materiales { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-top: 10px;}
+.tabla-materiales th { background: var(--accent); color: #000; padding: 8px; border: 1px solid var(--border); }
+.tabla-materiales td { padding: 8px; border: 1px solid var(--border); text-align: center; }
