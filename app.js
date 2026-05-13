@@ -1,4 +1,4 @@
-/* script.js - Lógica Allan Zelaya corregida */
+/* script.js - Allan Zelaya - CORRECCIÓN DE CONEXIÓN */
 const URL_LOGIN = "https://script.google.com/macros/s/AKfycbxGywAq6Fw29ezNIB9o_cHM4d6pDbQxxL8EKMdsNn-Q4wDAvB-2W0H_g9jXqxNrzX-3rw/exec";
 const URL_MATERIALES = "https://script.google.com/macros/s/AKfycbyPOrzRMPjppI77GDw92aVWzMP382eVNrv3XJ9yqRBAWYEwVxjwoUpzh_SnHWccMIxiIg/exec";
 
@@ -8,7 +8,6 @@ let proyecto = [];
 let sectorActivo = "";
 let nombreUsuario = "";
 
-// --- FUNCIÓN DE LOGIN CORREGIDA ---
 async function validarLogin() {
     const user = document.getElementById('user_input').value.trim();
     const pass = document.getElementById('pass_input').value.trim();
@@ -17,55 +16,46 @@ async function validarLogin() {
     const errorMsg = document.getElementById('login-error');
 
     if (!user || !pass) {
-        alert("⚠️ Por favor ingrese su usuario y contraseña.");
+        alert("⚠️ Ingrese usuario y contraseña");
         return;
     }
 
-    // Efecto de carga
+    // Activar estados de carga
     btnText.style.display = 'none';
     spinner.style.display = 'inline-block';
     errorMsg.style.display = 'none';
 
     try {
-        // Usamos una URL limpia para evitar errores de red
-        const consulta = `${URL_LOGIN}?action=login&user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}`;
+        // CORRECCIÓN: Usamos 'mode: no-cors' o manejamos la URL con parámetros limpios
+        const query = `${URL_LOGIN}?action=login&user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}`;
         
-        const response = await fetch(consulta);
-        
-        if (!response.ok) throw new Error("Error en el servidor");
-        
+        const response = await fetch(query);
         const result = await response.json();
 
         if (result.success) {
             nombreUsuario = user.toUpperCase();
             sectorActivo = result.sector.toUpperCase();
             
-            // Ocultar Login y mostrar App
             document.getElementById('login-container').style.display = 'none';
             document.getElementById('app-container').style.display = 'block';
             document.getElementById('user-display').innerText = `${nombreUsuario} | SECTOR: ${sectorActivo}`;
             
-            // Cargar los materiales del otro Sheet
             cargarDatosMateriales();
         } else {
-            // Si el servidor responde pero el usuario no existe
             errorMsg.style.display = 'block';
-            errorMsg.innerText = "❌ Usuario o contraseña incorrectos";
+            errorMsg.innerText = "❌ Datos incorrectos";
         }
     } catch (e) {
-        console.error("Error:", e);
-        alert("❌ Error de conexión: No se pudo contactar con la base de datos de usuarios. Verifique su conexión a internet.");
+        // Si el error persiste, es probable que la implementación en Google no sea pública
+        alert("❌ Error de comunicación. Verifique que el Apps Script de Google esté implementado como 'Cualquiera' (Anyone).");
+        console.error(e);
     } finally {
         btnText.style.display = 'inline-block';
         spinner.style.display = 'none';
     }
 }
 
-// --- RESTO DE LAS FUNCIONES ---
-
-function cerrarSesion() {
-    if(confirm("¿Desea cerrar sesión?")) location.reload();
-}
+// --- Resto de funciones (Cargar materiales, filtrar, etc) ---
 
 async function cargarDatosMateriales() {
     try {
@@ -83,11 +73,10 @@ async function cargarDatosMateriales() {
         const selectTipo = document.getElementById('select-tipo');
         selectTipo.innerHTML = '<option value="">Tipo...</option>';
         Object.keys(DATOS_POR_TIPO).sort().forEach(t => {
-            let opt = document.createElement('option');
-            opt.value = t; opt.text = t;
+            let opt = document.createElement('option'); opt.value = t; opt.text = t;
             selectTipo.appendChild(opt);
         });
-    } catch (e) { console.error("Error cargando materiales:", e); }
+    } catch (e) { console.error("Error materiales:", e); }
 }
 
 function filtrarEstructuras() {
@@ -96,8 +85,7 @@ function filtrarEstructuras() {
     selectEst.innerHTML = '<option value="">Estructura...</option>';
     if (tipo && DATOS_POR_TIPO[tipo]) {
         DATOS_POR_TIPO[tipo].sort().forEach(nom => {
-            let opt = document.createElement('option');
-            opt.value = nom; opt.text = nom;
+            let opt = document.createElement('option'); opt.value = nom; opt.text = nom;
             selectEst.appendChild(opt);
         });
     }
@@ -133,12 +121,11 @@ function actualizarVista() {
 
 function eliminarItem(i) { proyecto.splice(i, 1); actualizarVista(); }
 function reiniciarApp() { if(confirm("¿Limpiar todo?")) { proyecto = []; actualizarVista(); } }
+function cerrarSesion() { if(confirm("¿Cerrar sesión?")) location.reload(); }
 
 async function imprimirPDF() {
-    alert("Generando PDF...");
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     doc.text("CONSOLIDADO DE MATERIALES - ENEE", 10, 10);
-    doc.text(`SECTOR: ${sectorActivo}`, 10, 20);
     doc.save(`Materiales_${sectorActivo}.pdf`);
 }
