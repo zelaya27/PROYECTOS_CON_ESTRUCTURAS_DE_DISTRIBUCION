@@ -1,5 +1,6 @@
-/* script.js - Allan Zelaya - CORRECCIÓN DE CONEXIÓN */
-const URL_LOGIN = "https://script.google.com/macros/s/AKfycbxGywAq6Fw29ezNIB9o_cHM4d6pDbQxxL8EKMdsNn-Q4wDAvB-2W0H_g9jXqxNrzX-3rw/exec";
+/* script.js - Lógica Dinámica Allan Zelaya */
+// EXPLICACIÓN: Esta es tu URL de Apps Script que acabas de generar
+const URL_LOGIN = "https://script.google.com/macros/s/AKfycbwmnaOFx7NmTrNn2DCqLHp29Zcby_-05aSlaYMEoh-WDulZFskdz2ywDdXMkihCUK3Q2Q/exec";
 const URL_MATERIALES = "https://script.google.com/macros/s/AKfycbyPOrzRMPjppI77GDw92aVWzMP382eVNrv3XJ9yqRBAWYEwVxjwoUpzh_SnHWccMIxiIg/exec";
 
 let BASE_DE_DATOS = {};
@@ -8,7 +9,8 @@ let proyecto = [];
 let sectorActivo = "";
 let nombreUsuario = "";
 
-async function validarLogin() {
+// --- FUNCIÓN DE LOGIN (Usando JSONP para evitar bloqueos) ---
+function validarLogin() {
     const user = document.getElementById('user_input').value.trim();
     const pass = document.getElementById('pass_input').value.trim();
     const btnText = document.getElementById('login-text');
@@ -20,63 +22,50 @@ async function validarLogin() {
         return;
     }
 
-    // Activar estados de carga
     btnText.style.display = 'none';
     spinner.style.display = 'inline-block';
     errorMsg.style.display = 'none';
 
-    try {
-        // CORRECCIÓN: Usamos 'mode: no-cors' o manejamos la URL con parámetros limpios
-        const query = `${URL_LOGIN}?action=login&user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}`;
-        
-        const response = await fetch(query);
-        const result = await response.json();
-
+    // Función que recibirá la respuesta de Google
+    window.handleLoginResponse = function(result) {
         if (result.success) {
             nombreUsuario = user.toUpperCase();
             sectorActivo = result.sector.toUpperCase();
-            
             document.getElementById('login-container').style.display = 'none';
             document.getElementById('app-container').style.display = 'block';
             document.getElementById('user-display').innerText = `${nombreUsuario} | SECTOR: ${sectorActivo}`;
-            
             cargarDatosMateriales();
         } else {
             errorMsg.style.display = 'block';
-            errorMsg.innerText = "❌ Datos incorrectos";
+            btnText.style.display = 'inline-block';
+            spinner.style.display = 'none';
         }
-    } catch (e) {
-        // Si el error persiste, es probable que la implementación en Google no sea pública
-        alert("❌ Error de comunicación. Verifique que el Apps Script de Google esté implementado como 'Cualquiera' (Anyone).");
-        console.error(e);
-    } finally {
-        btnText.style.display = 'inline-block';
-        spinner.style.display = 'none';
-    }
-}
+    };
 
-// --- Resto de funciones (Cargar materiales, filtrar, etc) ---
+    // Petición mágica para saltar el error de conexión
+    const script = document.createElement('script');
+    script.src = `${URL_LOGIN}?action=login&user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}&callback=handleLoginResponse`;
+    document.body.appendChild(script);
+}
 
 async function cargarDatosMateriales() {
     try {
         const res = await fetch(URL_MATERIALES);
         BASE_DE_DATOS = await res.json();
         DATOS_POR_TIPO = {};
-
         Object.keys(BASE_DE_DATOS).forEach(nombre => {
             const primerMat = BASE_DE_DATOS[nombre][0];
             const tipo = primerMat.tipo || nombre.charAt(0).toUpperCase();
             if (!DATOS_POR_TIPO[tipo]) DATOS_POR_TIPO[tipo] = [];
             DATOS_POR_TIPO[tipo].push(nombre);
         });
-
         const selectTipo = document.getElementById('select-tipo');
         selectTipo.innerHTML = '<option value="">Tipo...</option>';
         Object.keys(DATOS_POR_TIPO).sort().forEach(t => {
             let opt = document.createElement('option'); opt.value = t; opt.text = t;
             selectTipo.appendChild(opt);
         });
-    } catch (e) { console.error("Error materiales:", e); }
+    } catch (e) { console.error(e); }
 }
 
 function filtrarEstructuras() {
@@ -120,7 +109,6 @@ function actualizarVista() {
 }
 
 function eliminarItem(i) { proyecto.splice(i, 1); actualizarVista(); }
-function reiniciarApp() { if(confirm("¿Limpiar todo?")) { proyecto = []; actualizarVista(); } }
 function cerrarSesion() { if(confirm("¿Cerrar sesión?")) location.reload(); }
 
 async function imprimirPDF() {
