@@ -17,16 +17,13 @@
             <h2>INICIAR SESIÓN</h2>
             <div class="input-group">
                 <i class="fas fa-user"></i>
-                <input type="text" id="user_input" placeholder="Usuario">
+                <input type="text" id="user_input" placeholder="Usuario (Nombre.Apellido)">
             </div>
             <div class="input-group">
                 <i class="fas fa-lock"></i>
                 <input type="password" id="pass_input" placeholder="Contraseña">
             </div>
-            <button class="btn-login" onclick="validarLogin()">
-                <span id="login-text">ENTRAR</span>
-                <i id="login-spinner" class="fas fa-spinner fa-spin" style="display:none"></i>
-            </button>
+            <button class="btn-login" onclick="validarLogin()">ENTRAR</button>
             <p id="login-error" class="error-msg">Usuario o contraseña incorrectos</p>
         </div>
     </div>
