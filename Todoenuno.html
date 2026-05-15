@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMA DE PROYECTOS Y EDITOR - ENEE</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* === ESTILOS GLOBALES COMPARTIDOS === */
+        :root { --navy: #003366; --bg: #0b141d; --card: #14212d; --text: #ffffff; --rojo: #e74c3c; --verde: #27ae60; --oro: #f1c40f; --gris: #a0aec0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; min-height: 100vh; }
+        
+        /* Contenedores base */
+        .container, .container-login { width: 100%; max-width: 500px; padding: 20px; box-sizing: border-box; }
+        
+        /* Contenedor del Editor un 25-30% más ancho */
+        #editor-container { max-width: 650px; }
+
+        .login-card { background: var(--card); padding: 40px 30px; border-radius: 20px; border: 2px solid var(--navy); text-align: center; margin-top: 60px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .logo-circle { background: white; width: 110px; height: 110px; border-radius: 50%; margin: -90px auto 20px; display: flex; align-items: center; justify-content: center; border: 4px solid var(--navy); overflow: hidden; }
+        .logo-circle img { width: 70%; }
+        
+        header { text-align: center; position: relative; padding-top: 10px; }
+        .logo-header { background: white; padding: 5px; border-radius: 8px; display: inline-block; margin-bottom: 5px; width: auto; }
+        .logo-header img { max-width: 80px; height: auto; }
+        .user-info-bar { background: var(--navy); padding: 8px; border-radius: 8px; font-size: 0.8rem; margin-bottom: 15px; font-weight: bold; text-align: center; border: 1px solid #0056b3; }
+        .btn-accion-top { position: absolute; right: 0; top: 10px; background: rgba(231, 76, 60, 0.1); border: 1px solid var(--rojo); color: var(--rojo); padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; cursor: pointer; font-weight: bold; }
+
+        .card { background: var(--card); padding: 15px; border-radius: 15px; border: 1px solid var(--navy); margin-bottom: 15px; }
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr 0.5fr; gap: 8px; margin-bottom: 10px; }
+        label { display: block; font-size: 0.7rem; font-weight: bold; color: var(--gris); text-transform: uppercase; margin-bottom: 5px; border-left: 3px solid var(--oro); padding-left: 8px; }
+        
+        .lista-items { list-style: none; padding: 0; margin: 0 0 15px 0;}
+        .lista-items li { background: #1b2a36; padding: 12px; border-radius: 10px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; border-left: 4px solid var(--oro);}
+        
+        .actions { display: flex; gap: 15px; }
+        .btn-edit { color: var(--oro); cursor: pointer; }
+        .btn-delete { color: var(--rojo); cursor: pointer; }
+
+        .tabla-materiales { width: 100%; border-collapse: collapse; font-size: 0.65rem; }
+        .tabla-materiales th { background: #1b2a36; padding: 8px; color: var(--gris); border-bottom: 1px solid var(--navy); }
+        .tabla-materiales td { padding: 8px; border-bottom: 1px solid #2d3748; text-align: center; }
+
+        input, select { background: #1b2a36; border: 1px solid var(--navy); color: white; padding: 10px; border-radius: 8px; font-size: 0.9rem; width: 100%; box-sizing: border-box; }
+        .btn-enviar { background: var(--verde); color: white; width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-secundario { background: transparent; border: 2px solid var(--navy); color: white; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; }
+        
+        /* Zona de edición: columnas optimizadas */
+        .add-row-zone { display: grid; grid-template-columns: 1.2fr 3fr 0.6fr 0.6fr auto; gap: 8px; background: #1b2a36; padding: 10px; border-radius: 10px; margin-bottom: 10px; }
+        .add-row-zone input { background: var(--bg); border: 1px solid var(--navy); color: white; padding: 8px; border-radius: 5px; font-size: 0.75rem; width: 100%; }
+        .scroll-edit { max-height: 450px; overflow-y: auto; margin: 15px 0; border: 1px solid #2d3748; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="login-container" class="container-login">
+        <div class="login-card">
+            <div class="logo-circle"><img src="https://raw.githubusercontent.com/josueortizp87-code/App-Cuadrillas-Distribucion/refs/heads/main/imagenes/UTCD%20Vertical.png"></div>
+            <h2 style="letter-spacing: 1px; margin-bottom: 5px;">APP DE PROYECTOS DISTRIBUCION</h2>
+            <small style="color: var(--oro); display: block; margin-bottom: 20px; font-weight: bold;">VERSION 9.0</small>
+            
+            <div style="text-align: left;">
+                <label style="border:none; padding:0; margin-bottom:5px;">USUARIO:</label>
+                <select id="user" style="margin-bottom:15px;"><option value="">Cargando lista...</option></select>
+                <label style="border:none; padding:0; margin-bottom:5px;">CONTRASEÑA:</label>
+                <input type="password" id="pass" placeholder="••••••••" style="margin-bottom:25px;">
+            </div>
+            <button class="btn-enviar" onclick="validarLogin()" style="background:var(--navy)">INICIAR SESIÓN</button>
+        </div>
+    </div>
+
+    <div id="app-container" class="container" style="display: none;">
+        <header>
+            <button class="btn-accion-top" onclick="cerrarSesion()">SALIR</button>
+            <div class="logo-header"><img id="main-logo" src="https://raw.githubusercontent.com/josueortizp87-code/App-Cuadrillas-Distribucion/refs/heads/main/imagenes/UTCD%20Vertical.png"></div>
+            <h1 style="font-size: 1.4rem; margin: 10px 0;">GENERADOR DE PROYECTOS</h1>
+            <div id="user-display" class="user-info-bar"></div>
+        </header>
+        <div class="card">
+            <label>Selección de Estructura</label>
+            <div class="grid-inputs">
+                <select id="select-tipo" onchange="filtrarEstructuras()"><option value="">Tipo...</option></select>
+                <select id="select-estructura"><option value="">Estructura...</option></select>
+                <input type="number" id="input-cantidad" value="1" min="1">
+            </div>
+            <button class="btn-secundario" onclick="agregarEstructura()">AÑADIR A LISTA</button>
+        </div>
+        <ul id="lista-estructuras" class="lista-items"></ul>
+        <div class="card" style="padding:0; overflow:hidden;">
+            <table class="tabla-materiales">
+                <thead><tr><th>CÓDIGO</th><th>DESCRIPCIÓN</th><th>UNID</th><th>CANT. TOTAL</th></tr></thead>
+                <tbody id="tabla-body"></tbody>
+            </table>
+        </div>
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <button class="btn-enviar" style="background-color: var(--rojo);" onclick="imprimirPDF()"><i class="fas fa-file-pdf"></i> GENERAR PDF</button>
+            <button class="btn-enviar" style="background-color: var(--verde);" onclick="generarExcel()"><i class="fas fa-file-excel"></i> GENERAR EXCEL</button>
+        </div>
+    </div>
+
+    <div id="editor-container" class="container" style="display: none;">
+        <header>
+            <button class="btn-accion-top" style="color:var(--oro); border-color:var(--oro);" onclick="cerrarAppEditor()">VOLVER</button>
+            <h1 style="font-size: 1.4rem; margin: 10px 0; color:var(--oro);">EDITOR DE ESTRUCTURAS</h1>
+            <div class="user-info-bar" style="background:var(--bg); border: 1px solid var(--oro); color:var(--oro);">
+                Estructura Actual: <span id="nom-est-editor" style="color:white;"></span>
+            </div>
+        </header>
+        <div class="card">
+            <label>Añadir Nuevo Material (Listas Validadas)</label>
+            <div class="add-row-zone">
+                <input list="lista-codigos" id="editor-cod" placeholder="Código" onchange="buscarPorCodigoEditor(this.value)">
+                <datalist id="lista-codigos"></datalist>
+                <input list="lista-descripciones" id="editor-desc" placeholder="Descripción" onchange="buscarPorDescEditor(this.value)">
+                <datalist id="lista-descripciones"></datalist>
+                <input type="text" id="editor-unid" placeholder="UND" readonly style="background:#0b141d; color:var(--gris);">
+                <input type="number" id="editor-cant" value="1" step="0.01">
+                <button onclick="agregarMaterialEditor()" style="background:var(--verde); color:white; border:none; padding:8px 12px; border-radius:5px; cursor:pointer;"><i class="fas fa-plus"></i></button>
+            </div>
+            <div class="scroll-edit">
+                <table class="tabla-materiales">
+                    <thead style="position: sticky; top: 0; z-index:10; background:#1b2a36;">
+                        <tr><th>CÓDIGO</th><th>DESCRIPCIÓN</th><th>UNID</th><th>CANT</th><th></th></tr>
+                    </thead>
+                    <tbody id="editor-table-body"></tbody>
+                </table>
+            </div>
+            <button class="btn-enviar" id="btn-save-editor" onclick="guardarCambiosEditor()"><i class="fas fa-save"></i> ACTUALIZAR BASE DE DATOS</button>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURACIÓN ---
+        const URL_USUARIOS = "https://script.google.com/macros/s/AKfycbywo11Ceg6g49JwlERQymF7Ia-T_gDKrKXFnhH7LcBkSaWKyLYq0P0YwK9a2CVZP-NkAQ/exec";
+        
+        // --- NUEVA URL DE MATERIALES ACTUALIZADA ---
+        const URL_MATERIALES = "https://script.google.com/macros/s/AKfycbzoT19n2VdeX2rE1DR6gVKFp9ZqXAWDHXATgZIHBG2SnIDXaZWpuyHgV8Ru52Z3VptWcg/exec";
+
+        let BASE_DE_DATOS = {}; 
+        let LISTA_MAESTRA_MATERIALES = []; 
+        let nombreUsuario = ""; 
+        let sectorUsuario = "";
+
+        window.onload = () => {
+            const script = document.createElement('script');
+            script.src = `${URL_USUARIOS}?action=getUsers&callback=llenarUsuarios`;
+            document.body.appendChild(script);
+        };
+
+        window.llenarUsuarios = (d) => {
+            const s = document.getElementById('user');
+            s.innerHTML = '<option value="">Seleccione Usuario...</option>';
+            d.usuarios.forEach(u => s.innerHTML += `<option value="${u}">${u}</option>`);
+        };
+
+        function validarLogin() {
+            const u = document.getElementById('user').value;
+            const p = document.getElementById('pass').value;
+            if(!u || !p) return;
+            const script = document.createElement('script');
+            script.src = `${URL_USUARIOS}?action=login&user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}&callback=resLogin`;
+            document.body.appendChild(script);
+        }
+
+        window.resLogin = (r) => {
+            if(r.success) {
+                nombreUsuario = document.getElementById('user').value;
+                sectorUsuario = r.sector || "General";
+                document.getElementById('login-container').style.display='none';
+                document.getElementById('app-container').style.display='block';
+                document.getElementById('user-display').innerHTML = `<i class="fas fa-hard-hat"></i> ${nombreUsuario} | <i class="fas fa-location-dot"></i> ${sectorUsuario}`;
+                cargarDatosCompartidos();
+            } else alert("Error de credenciales");
+        };
+
+        function cargarDatosCompartidos() {
+            const script = document.createElement('script');
+            script.src = `${URL_MATERIALES}?callback=procesarTodo`;
+            document.body.appendChild(script);
+        }
+
+        window.procesarTodo = (data) => {
+            const dbData = data.db || data;
+            BASE_DE_DATOS = dbData;
+            if(data.listaMaestraCompleta) {
+                LISTA_MAESTRA_MATERIALES = data.listaMaestraCompleta;
+                const dlCod = document.getElementById('lista-codigos');
+                const dlDesc = document.getElementById('lista-descripciones');
+                dlCod.innerHTML = ""; dlDesc.innerHTML = "";
+                LISTA_MAESTRA_MATERIALES.forEach(m => {
+                    dlCod.innerHTML += `<option value="${m.codigo}">`;
+                    dlDesc.innerHTML += `<option value="${m.nombre}">`;
+                });
+            }
+            const st = document.getElementById('select-tipo');
+            st.innerHTML = '<option value="">Tipo...</option>';
+            let tipos = data.tiposValidados || [...new Set(Object.keys(BASE_DE_DATOS).map(n => n.split('-')[0]))].sort();
+            tipos.forEach(t => st.innerHTML += `<option value="${t}">${t}</option>`);
+            if(data.estructurasValidadas) window.listaEstructurasValidada = data.estructurasValidadas;
+            actualizarVistaPrincipal();
+        };
+
+        // --- LÓGICA DE VINCULACIÓN ---
+        function buscarPorCodigoEditor(val) {
+            const item = LISTA_MAESTRA_MATERIALES.find(i => String(i.codigo).trim() === String(val).trim());
+            if(item) { document.getElementById('editor-desc').value = item.nombre; document.getElementById('editor-unid').value = item.unidad; }
+        }
+        function buscarPorDescEditor(val) {
+            const item = LISTA_MAESTRA_MATERIALES.find(i => String(i.nombre).trim() === String(val).trim());
+            if(item) { document.getElementById('editor-cod').value = item.codigo; document.getElementById('editor-unid').value = item.unidad; }
+        }
+
+        function filtrarEstructuras() {
+            const t = document.getElementById('select-tipo').value;
+            const se = document.getElementById('select-estructura');
+            se.innerHTML = '<option value="">Estructura...</option>';
+            if (!t) return;
+            let opciones = window.listaEstructurasValidada ? window.listaEstructurasValidada.filter(n => n.startsWith(t)).sort() : Object.keys(BASE_DE_DATOS).filter(n => n.startsWith(t)).sort();
+            opciones.forEach(n => se.innerHTML += `<option value="${n}">${n}</option>`);
+        }
+
+        let proyecto = [];
+        function agregarEstructura() {
+            const n = document.getElementById('select-estructura').value;
+            const c = parseInt(document.getElementById('input-cantidad').value);
+            if(!n || c <= 0) return;
+            let existe = proyecto.find(p => p.nombre === n);
+            if(existe) existe.cantidad += c; else proyecto.push({nombre: n, cantidad: c});
+            actualizarVistaPrincipal();
+        }
+
+        function actualizarVistaPrincipal() {
+            const ul = document.getElementById('lista-estructuras');
+            const tb = document.getElementById('tabla-body');
+            ul.innerHTML = ""; tb.innerHTML = "";
+            let totales = {};
+            proyecto.forEach((p, idx) => {
+                ul.innerHTML += `<li><span><b style="color:var(--oro)">${p.cantidad}x</b> ${p.nombre}</span><div class="actions"><i class="fas fa-edit btn-edit" onclick="iniciarAppEditor('${p.nombre}')"></i><i class="fas fa-trash-alt btn-delete" onclick="proyecto.splice(${idx},1);actualizarVistaPrincipal()"></i></div></li>`;
+                if(BASE_DE_DATOS[p.nombre]) {
+                    BASE_DE_DATOS[p.nombre].forEach(m => {
+                        if(!totales[m.codigo]) totales[m.codigo] = {...m, cantTotal: 0};
+                        totales[m.codigo].cantTotal += (m.cantidad * p.cantidad);
+                    });
+                }
+            });
+            Object.values(totales).forEach(m => { tb.innerHTML += `<tr><td>${m.codigo}</td><td style="text-align:left">${m.nombre}</td><td>${m.unidad}</td><td><b>${m.cantTotal.toFixed(2)}</b></td></tr>`; });
+        }
+
+        async function imprimirPDF() {
+            if (proyecto.length === 0) return;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setDrawColor(0); doc.rect(5, 5, 200, 287); doc.rect(10, 10, 50, 30);
+            try { const img = document.getElementById('main-logo'); doc.addImage(img, 'PNG', 12, 12, 46, 26); } catch(e) {}
+            doc.rect(60, 10, 90, 30); doc.setFontSize(11); doc.text("REPORTE TÉCNICO DE MATERIALES", 105, 22, { align: 'center' });
+            doc.text(`SECTOR: ${sectorUsuario.toUpperCase()}`, 105, 32, { align: 'center' });
+            doc.rect(150, 10, 50, 30); doc.setFontSize(8); doc.text(new Date().toLocaleDateString(), 175, 18);
+            let totales = {};
+            proyecto.forEach(p => { if(BASE_DE_DATOS[p.nombre]) { BASE_DE_DATOS[p.nombre].forEach(m => { if(!totales[m.codigo]) totales[m.codigo] = {...m, cantTotal: 0}; totales[m.codigo].cantTotal += (m.cantidad * p.cantidad); }); } });
+            let dataMat = Object.values(totales).map(m => [m.codigo, m.nombre, m.unidad, m.cantTotal.toFixed(2)]);
+            doc.autoTable({ startY: 45, head: [['CÓDIGO', 'DESCRIPCIÓN', 'UND', 'CANT.']], body: dataMat, theme: 'grid' });
+            doc.save(`Reporte_${nombreUsuario}.pdf`);
+        }
+
+        function generarExcel() {
+            if (proyecto.length === 0) return;
+            let totales = {};
+            proyecto.forEach(p => { if(BASE_DE_DATOS[p.nombre]) { BASE_DE_DATOS[p.nombre].forEach(m => { if(!totales[m.codigo]) totales[m.codigo] = {...m, cantTotal: 0}; totales[m.codigo].cantTotal += (m.cantidad * p.cantidad); }); } });
+            let dataMat = Object.values(totales).map(m => ({ "CÓDIGO": m.codigo, "DESCRIPCIÓN": m.nombre, "UNIDAD": m.unidad, "TOTAL": m.cantTotal }));
+            const worksheet = XLSX.utils.json_to_sheet(dataMat);
+            const workbook = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(workbook, worksheet, "Materiales"); XLSX.writeFile(workbook, `Reporte_${nombreUsuario}.xlsx`);
+        }
+
+        let editor_estructuraActual = ""; let editor_materialesList = [];
+        function iniciarAppEditor(nombreEstructura) {
+            document.getElementById('app-container').style.display = 'none';
+            document.getElementById('editor-container').style.display = 'block';
+            editor_estructuraActual = nombreEstructura;
+            document.getElementById('nom-est-editor').innerText = nombreEstructura;
+            editor_materialesList = JSON.parse(JSON.stringify(BASE_DE_DATOS[nombreEstructura] || []));
+            renderTablaEditor();
+        }
+
+        function cerrarAppEditor() { document.getElementById('editor-container').style.display = 'none'; document.getElementById('app-container').style.display = 'block'; }
+
+        function renderTablaEditor() {
+            const tb = document.getElementById('editor-table-body'); tb.innerHTML = "";
+            editor_materialesList.forEach((m, idx) => { tb.innerHTML += `<tr><td>${m.codigo}</td><td style="text-align:left; font-size:0.6rem;">${m.nombre}</td><td>${m.unidad}</td><td><input type="number" step="0.01" value="${m.cantidad}" onchange="editor_materialesList[${idx}].cantidad = parseFloat(this.value)" style="width:60px; text-align:center; background:var(--bg); border:1px solid var(--navy); color:var(--oro);"></td><td><i class="fas fa-times-circle" style="color:var(--rojo); cursor:pointer;" onclick="editor_materialesList.splice(${idx},1);renderTablaEditor()"></i></td></tr>`; });
+        }
+
+        function agregarMaterialEditor() {
+            const cod = document.getElementById('editor-cod').value;
+            const desc = document.getElementById('editor-desc').value;
+            const unid = document.getElementById('editor-unid').value;
+            const cant = parseFloat(document.getElementById('editor-cant').value);
+            if(!cod || !desc || cant <= 0) return;
+            editor_materialesList.push({ codigo: cod, nombre: desc, unidad: unid, cantidad: cant });
+            renderTablaEditor();
+            ['editor-cod','editor-desc','editor-unid'].forEach(id => document.getElementById(id).value = "");
+            document.getElementById('editor-cant').value = 1;
+        }
+
+        // --- FUNCIÓN DE GUARDADO MODIFICADA CON AUDITORÍA ---
+        async function guardarCambiosEditor() {
+            const btn = document.getElementById('btn-save-editor');
+            btn.innerHTML = '<i class="fas fa-sync fa-spin"></i> GUARDANDO...'; btn.disabled = true;
+            
+            // Enviamos usuario y sector al script
+            const payload = { 
+                action: "updateFullEstructura", 
+                estructura: editor_estructuraActual, 
+                materiales: editor_materialesList,
+                usuario: nombreUsuario,
+                sector: sectorUsuario
+            };
+
+            try {
+                await fetch(URL_MATERIALES, { 
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    body: JSON.stringify(payload) 
+                });
+                BASE_DE_DATOS[editor_estructuraActual] = JSON.parse(JSON.stringify(editor_materialesList));
+                alert("✅ BASE DE DATOS ACTUALIZADA CON ÉXITO."); 
+                cerrarAppEditor(); 
+                actualizarVistaPrincipal();
+            } catch(e) { 
+                alert("Error al guardar."); 
+            } finally { 
+                btn.innerHTML = '<i class="fas fa-save"></i> ACTUALIZAR BASE DE DATOS'; 
+                btn.disabled = false; 
+            }
+        }
+
+        function cerrarSesion() { location.reload(); }
+    </script>
+</body>
+</html>
