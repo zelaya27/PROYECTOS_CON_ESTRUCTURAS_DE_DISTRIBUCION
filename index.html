@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APP DE PROYECTOS DISTRIBUCION</title>
+    <title>SISTEMA DE PROYECTOS Y EDITOR - ENEE</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -14,10 +14,7 @@
         :root { --navy: #003366; --bg: #0b141d; --card: #14212d; --text: #ffffff; --rojo: #e74c3c; --verde: #27ae60; --oro: #f1c40f; --gris: #a0aec0; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; min-height: 100vh; }
         
-        /* Contenedores base */
         .container, .container-login { width: 100%; max-width: 500px; padding: 20px; box-sizing: border-box; }
-        
-        /* Contenedor del Editor un 25-30% más ancho */
         #editor-container { max-width: 650px; }
 
         .login-card { background: var(--card); padding: 40px 30px; border-radius: 20px; border: 2px solid var(--navy); text-align: center; margin-top: 60px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
@@ -49,7 +46,6 @@
         .btn-enviar { background: var(--verde); color: white; width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .btn-secundario { background: transparent; border: 2px solid var(--navy); color: white; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; }
         
-        /* Zona de edición: columnas optimizadas */
         .add-row-zone { display: grid; grid-template-columns: 1.2fr 3fr 0.6fr 0.6fr auto; gap: 8px; background: #1b2a36; padding: 10px; border-radius: 10px; margin-bottom: 10px; }
         .add-row-zone input { background: var(--bg); border: 1px solid var(--navy); color: white; padding: 8px; border-radius: 5px; font-size: 0.75rem; width: 100%; }
         .scroll-edit { max-height: 450px; overflow-y: auto; margin: 15px 0; border: 1px solid #2d3748; border-radius: 10px; }
@@ -59,13 +55,14 @@
 
     <div id="login-container" class="container-login">
         <div class="login-card">
-            <div class="logo-circle"><img src="https://raw.githubusercontent.com/josueortizp87-code/App-Cuadrillas-Distribucion/refs/heads/main/imagenes/UTCD%20Vertical.png"></div>
+            <div class="logo-circle"><img src="https://raw.githubusercontent.com/zelaya27/IMAGENES_AZ/main/UTCD%20Vertical.png"></div>
             <h2 style="letter-spacing: 1px; margin-bottom: 5px;">APP DE PROYECTOS DISTRIBUCION</h2>
-            <small style="color: var(--oro); display: block; margin-bottom: 20px; font-weight: bold;">VERSION 9.0</small>
+            <small style="color: var(--oro); display: block; margin-bottom: 20px; font-weight: bold;">VERSION 9.1</small>
             
             <div style="text-align: left;">
                 <label style="border:none; padding:0; margin-bottom:5px;">USUARIO:</label>
-                <select id="user" style="margin-bottom:15px;"><option value="">Cargando lista...</option></select>
+                <input type="text" id="user" placeholder="Escriba su nombre de usuario" style="margin-bottom:15px; text-transform: uppercase;">
+                
                 <label style="border:none; padding:0; margin-bottom:5px;">CONTRASEÑA:</label>
                 <input type="password" id="pass" placeholder="••••••••" style="margin-bottom:25px;">
             </div>
@@ -76,7 +73,7 @@
     <div id="app-container" class="container" style="display: none;">
         <header>
             <button class="btn-accion-top" onclick="cerrarSesion()">SALIR</button>
-            <div class="logo-header"><img id="main-logo" src="https://raw.githubusercontent.com/josueortizp87-code/App-Cuadrillas-Distribucion/refs/heads/main/imagenes/UTCD%20Vertical.png"></div>
+            <div class="logo-header"><img id="main-logo" src="https://raw.githubusercontent.com/zelaya27/IMAGENES_AZ/main/UTCD%20Vertical.png"></div>
             <h1 style="font-size: 1.4rem; margin: 10px 0;">GENERADOR DE PROYECTOS</h1>
             <div id="user-display" class="user-info-bar"></div>
         </header>
@@ -134,47 +131,46 @@
     </div>
 
     <script>
-        // --- CONFIGURACIÓN ---
-        const URL_USUARIOS = "https://script.google.com/macros/s/AKfycbywo11Ceg6g49JwlERQymF7Ia-T_gDKrKXFnhH7LcBkSaWKyLYq0P0YwK9a2CVZP-NkAQ/exec";
-        
-        // --- NUEVA URL DE MATERIALES ACTUALIZADA ---
+        // --- CONFIGURACIÓN DE CONEXIÓN CON APPS SCRIPT (GITHUB PAGES READY) ---
+        const URL_USUARIOS = "https://script.google.com/macros/s/AKfycbx5bo8uFeumcm3e5UbdbMv_i8lV1KJsyuHKyUliFV2z8rdcuJdCGmba4rfCnJx6X-xQNg/exec";
         const URL_MATERIALES = "https://script.google.com/macros/s/AKfycbzoT19n2VdeX2rE1DR6gVKFp9ZqXAWDHXATgZIHBG2SnIDXaZWpuyHgV8Ru52Z3VptWcg/exec";
 
         let BASE_DE_DATOS = {}; 
         let LISTA_MAESTRA_MATERIALES = []; 
+        let CACHE_FILTRADO = {}; 
         let nombreUsuario = ""; 
         let sectorUsuario = "";
 
-        window.onload = () => {
-            const script = document.createElement('script');
-            script.src = `${URL_USUARIOS}?action=getUsers&callback=llenarUsuarios`;
-            document.body.appendChild(script);
-        };
-
-        window.llenarUsuarios = (d) => {
-            const s = document.getElementById('user');
-            s.innerHTML = '<option value="">Seleccione Usuario...</option>';
-            d.usuarios.forEach(u => s.innerHTML += `<option value="${u}">${u}</option>`);
-        };
+        window.onload = () => { console.log("Sistema optimizado listo y ejecutándose desde GitHub Pages."); };
 
         function validarLogin() {
-            const u = document.getElementById('user').value;
-            const p = document.getElementById('pass').value;
-            if(!u || !p) return;
+            const u = document.getElementById('user').value.trim().toUpperCase();
+            const p = document.getElementById('pass').value.trim();
+            if(!u || !p) { alert("Por favor, ingrese usuario y contraseña"); return; }
+            
+            const btn = document.querySelector('.btn-enviar');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> VALIDANDO...';
+            btn.disabled = true;
+            
             const script = document.createElement('script');
             script.src = `${URL_USUARIOS}?action=login&user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}&callback=resLogin`;
+            script.onerror = () => { alert("Error de conexión con el servidor"); btn.innerHTML = 'INICIAR SESIÓN'; btn.disabled = false; };
             document.body.appendChild(script);
         }
 
         window.resLogin = (r) => {
             if(r.success) {
-                nombreUsuario = document.getElementById('user').value;
+                nombreUsuario = document.getElementById('user').value.toUpperCase();
                 sectorUsuario = r.sector || "General";
                 document.getElementById('login-container').style.display='none';
                 document.getElementById('app-container').style.display='block';
                 document.getElementById('user-display').innerHTML = `<i class="fas fa-hard-hat"></i> ${nombreUsuario} | <i class="fas fa-location-dot"></i> ${sectorUsuario}`;
                 cargarDatosCompartidos();
-            } else alert("Error de credenciales");
+            } else {
+                alert("Usuario o contraseña incorrectos.");
+                document.querySelector('.btn-enviar').innerHTML = 'INICIAR SESIÓN';
+                document.querySelector('.btn-enviar').disabled = false;
+            }
         };
 
         function cargarDatosCompartidos() {
@@ -184,27 +180,50 @@
         }
 
         window.procesarTodo = (data) => {
-            const dbData = data.db || data;
-            BASE_DE_DATOS = dbData;
+            BASE_DE_DATOS = data.db || data;
+            
             if(data.listaMaestraCompleta) {
                 LISTA_MAESTRA_MATERIALES = data.listaMaestraCompleta;
-                const dlCod = document.getElementById('lista-codigos');
-                const dlDesc = document.getElementById('lista-descripciones');
-                dlCod.innerHTML = ""; dlDesc.innerHTML = "";
+                let htmlCod = "", htmlDesc = "";
                 LISTA_MAESTRA_MATERIALES.forEach(m => {
-                    dlCod.innerHTML += `<option value="${m.codigo}">`;
-                    dlDesc.innerHTML += `<option value="${m.nombre}">`;
+                    htmlCod += `<option value="${m.codigo}">`;
+                    htmlDesc += `<option value="${m.nombre}">`;
                 });
+                document.getElementById('lista-codigos').innerHTML = htmlCod;
+                document.getElementById('lista-descripciones').innerHTML = htmlDesc;
             }
+
             const st = document.getElementById('select-tipo');
             st.innerHTML = '<option value="">Tipo...</option>';
-            let tipos = data.tiposValidados || [...new Set(Object.keys(BASE_DE_DATOS).map(n => n.split('-')[0]))].sort();
+            let tipos = data.tiposValidados || [];
             tipos.forEach(t => st.innerHTML += `<option value="${t}">${t}</option>`);
-            if(data.estructurasValidadas) window.listaEstructurasValidada = data.estructurasValidadas;
+
+            if(data.estructurasValidadas) {
+                window.listaEstructurasValidada = data.estructurasValidadas;
+                CACHE_FILTRADO = {};
+                tipos.forEach(tipo => {
+                    CACHE_FILTRADO[tipo] = window.listaEstructurasValidada.filter(n => n.startsWith(tipo)).sort();
+                });
+            }
             actualizarVistaPrincipal();
         };
 
-        // --- LÓGICA DE VINCULACIÓN ---
+        function filtrarEstructuras() {
+            const t = document.getElementById('select-tipo').value;
+            const se = document.getElementById('select-estructura');
+            se.innerHTML = '<option value="">Estructura...</option>';
+            if (!t) return;
+
+            let opciones = CACHE_FILTRADO[t] || [];
+            if (opciones.length === 0) {
+                opciones = Object.keys(BASE_DE_DATOS).filter(n => n.startsWith(t)).sort();
+            }
+            
+            let html = '<option value="">Estructura...</option>';
+            opciones.forEach(n => html += `<option value="${n}">${n}</option>`);
+            se.innerHTML = html;
+        }
+
         function buscarPorCodigoEditor(val) {
             const item = LISTA_MAESTRA_MATERIALES.find(i => String(i.codigo).trim() === String(val).trim());
             if(item) { document.getElementById('editor-desc').value = item.nombre; document.getElementById('editor-unid').value = item.unidad; }
@@ -212,15 +231,6 @@
         function buscarPorDescEditor(val) {
             const item = LISTA_MAESTRA_MATERIALES.find(i => String(i.nombre).trim() === String(val).trim());
             if(item) { document.getElementById('editor-cod').value = item.codigo; document.getElementById('editor-unid').value = item.unidad; }
-        }
-
-        function filtrarEstructuras() {
-            const t = document.getElementById('select-tipo').value;
-            const se = document.getElementById('select-estructura');
-            se.innerHTML = '<option value="">Estructura...</option>';
-            if (!t) return;
-            let opciones = window.listaEstructurasValidada ? window.listaEstructurasValidada.filter(n => n.startsWith(t)).sort() : Object.keys(BASE_DE_DATOS).filter(n => n.startsWith(t)).sort();
-            opciones.forEach(n => se.innerHTML += `<option value="${n}">${n}</option>`);
         }
 
         let proyecto = [];
@@ -304,39 +314,35 @@
             document.getElementById('editor-cant').value = 1;
         }
 
-        // --- FUNCIÓN DE GUARDADO MODIFICADA CON AUDITORÍA ---
         async function guardarCambiosEditor() {
             const btn = document.getElementById('btn-save-editor');
             btn.innerHTML = '<i class="fas fa-sync fa-spin"></i> GUARDANDO...'; btn.disabled = true;
-            
-            // Enviamos usuario y sector al script
-            const payload = { 
-                action: "updateFullEstructura", 
-                estructura: editor_estructuraActual, 
-                materiales: editor_materialesList,
-                usuario: nombreUsuario,
-                sector: sectorUsuario
-            };
-
+            const payload = { action: "updateFullEstructura", estructura: editor_estructuraActual, materiales: editor_materialesList, usuario: nombreUsuario, sector: sectorUsuario };
             try {
-                await fetch(URL_MATERIALES, { 
-                    method: 'POST', 
-                    mode: 'no-cors', 
-                    body: JSON.stringify(payload) 
-                });
+                await fetch(URL_MATERIALES, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
                 BASE_DE_DATOS[editor_estructuraActual] = JSON.parse(JSON.stringify(editor_materialesList));
-                alert("✅ BASE DE DATOS ACTUALIZADA CON ÉXITO."); 
+                alert("✅ BASE DE DATOS ACTUALIZADA EN GOOGLE SHEETS."); 
                 cerrarAppEditor(); 
                 actualizarVistaPrincipal();
-            } catch(e) { 
-                alert("Error al guardar."); 
-            } finally { 
-                btn.innerHTML = '<i class="fas fa-save"></i> ACTUALIZAR BASE DE DATOS'; 
-                btn.disabled = false; 
-            }
+            } catch(e) { alert("Error al guardar."); } finally { btn.innerHTML = '<i class="fas fa-save"></i> ACTUALIZAR BASE DE DATOS'; btn.disabled = false; }
         }
 
-        function cerrarSesion() { location.reload(); }
+        function cerrarSesion() {
+            document.getElementById('app-container').style.display = 'none';
+            document.getElementById('editor-container').style.display = 'none';
+            document.getElementById('login-container').style.display = 'block';
+            nombreUsuario = "";
+            sectorUsuario = "";
+            proyecto = []; 
+            document.getElementById('user').value = "";
+            document.getElementById('pass').value = "";
+            const btnLogin = document.querySelector('#login-container .btn-enviar');
+            if (btnLogin) {
+                btnLogin.innerHTML = 'INICIAR SESIÓN';
+                btnLogin.disabled = false;
+            }
+            actualizarVistaPrincipal();
+        }
     </script>
 </body>
 </html>
